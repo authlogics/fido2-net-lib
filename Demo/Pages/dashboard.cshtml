@@ -5,7 +5,7 @@
     Layout = "_Layout.cshtml";
 
     // Please know that this is not good for production:
-    var DemoStorage = MyController.DemoStorage;
+    var DemoStorage = MyController.FidoManager;
     var _mds = MyController._mds;
 
     var username = Model.Username;
@@ -62,7 +62,7 @@
                 <tr>
                     <td>@item.RegDate</td>
                     <td><img src="@icon" /> @desc</td>
-                    <td>@item.SignatureCounter</td>
+                    <td>@item.SignCount</td>
                     <td>@item.AaGuid</td>
                     <td>@userHandle</td>
                     <td>@userId</td>

@@ -5,6 +5,8 @@
     <RootNamespace>Fido2Demo</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Authlogics Source\Authlogics Authentication Server\Authlogics.Core\Authlogics.Core.vbproj" />
+    <ProjectReference Include="..\..\Authlogics Source\Authlogics Authentication Server\Authlogics\Authlogics.vbproj" />
     <ProjectReference Include="..\Src\Fido2.AspNet\Fido2.AspNet.csproj" />
     <ProjectReference Include="..\Src\Fido2.Models\Fido2.Models.csproj" />
     <ProjectReference Include="..\Src\Fido2\Fido2.csproj" />
