@@ -60,6 +60,10 @@ public static class COSE
         /// ECDSA using secp256k1 curve and SHA-256
         /// </summary>
         ES256K = -47,
+        /// <summary> 
+        /// ECDH ES w/ HKDF-256
+        /// </summary>
+        ECDHES_HKDF256 = -25
     }
     /// <summary>
     /// COSE Key Common Parameters https://www.iana.org/assignments/cose/cose.xhtml#key-common-parameters

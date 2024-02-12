@@ -137,6 +137,7 @@ public sealed class CredentialPublicKey
                 curve = ECCurve.CreateFromFriendlyName("secP256k1");
                 break;
             case (COSE.Algorithm.ES256, COSE.EllipticCurve.P256):
+            case (COSE.Algorithm.ECDHES_HKDF256, COSE.EllipticCurve.P256):
                 curve = ECCurve.NamedCurves.nistP256;
                 break;
             case (COSE.Algorithm.ES384, COSE.EllipticCurve.P384):
