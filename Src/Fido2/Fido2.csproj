@@ -8,7 +8,7 @@
     <IsTrimmable>true</IsTrimmable>
     <NoWarn>$(NoWarn);IDE0057</NoWarn>
     <IsPackable>true</IsPackable>
-    <LangVersion>11</LangVersion>
+    <LangVersion>12</LangVersion>
     <PackageId>$(AssemblyName).Intercede</PackageId>
     <Authors>$(AssemblyName), Intercede</Authors>
     <PackageProjectUrl>https://github.com/authlogics/fido2-net-lib</PackageProjectUrl>
