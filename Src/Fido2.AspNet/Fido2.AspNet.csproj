@@ -3,6 +3,10 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>Fido2NetLib</RootNamespace>
+    <PackageId>$(AssemblyName).Intercede</PackageId>
+    <Authors>$(AssemblyName), Intercede</Authors>
+    <PackageProjectUrl>https://github.com/authlogics/fido2-net-lib</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/authlogics/fido2-net-lib</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

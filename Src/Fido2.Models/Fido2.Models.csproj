@@ -5,6 +5,11 @@
     <RootNamespace>Fido2NetLib</RootNamespace>
     <IsTrimmable>true</IsTrimmable>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <PackageId>$(AssemblyName).Intercede</PackageId>
+    <Title>$(AssemblyName)</Title>
+    <Authors>$(AssemblyName), Intercede</Authors>
+    <PackageProjectUrl>https://github.com/authlogics/fido2-net-lib</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/authlogics/fido2-net-lib</RepositoryUrl>
   </PropertyGroup>
   
   <ItemGroup>
