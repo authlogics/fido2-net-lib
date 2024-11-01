@@ -1,8 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFrameworks>$(SupportedTargetFrameworks)</TargetFrameworks>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>Fido2NetLib</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsTrimmable>true</IsTrimmable>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <PackageId>$(AssemblyName).Intercede</PackageId>
@@ -10,9 +11,7 @@
     <Authors>$(AssemblyName), Intercede</Authors>
     <PackageProjectUrl>https://github.com/authlogics/fido2-net-lib</PackageProjectUrl>
     <RepositoryUrl>https://github.com/authlogics/fido2-net-lib</RepositoryUrl>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <Compile Remove="IMetadataService.cs" />
-  </ItemGroup>
+
 </Project>

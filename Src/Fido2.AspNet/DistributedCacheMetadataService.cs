@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
@@ -34,9 +29,7 @@ public class DistributedCacheMetadataService : IMetadataService
         ILogger<DistributedCacheMetadataService> logger,
         ISystemClock systemClock)
     {
-
-        if (repositories == null)
-            throw new ArgumentNullException(nameof(repositories));
+        ArgumentNullException.ThrowIfNull(repositories);
 
         _repositories = repositories.ToList();
         _distributedCache = distributedCache;
@@ -60,7 +53,7 @@ public class DistributedCacheMetadataService : IMetadataService
         if (!string.IsNullOrWhiteSpace(blob?.NextUpdate)
             && DateTimeOffset.TryParseExact(
                 blob.NextUpdate,
-                new[] { "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "o" }, //Sould be ISO8601 date but allow for other ISO-like formats too
+                new[] { "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "o" }, // Should be ISO8601 date but allow for other ISO-like formats too
                 System.Globalization.CultureInfo.InvariantCulture,
                 System.Globalization.DateTimeStyles.AssumeUniversal | System.Globalization.DateTimeStyles.AdjustToUniversal,
                 out var parsedDate))

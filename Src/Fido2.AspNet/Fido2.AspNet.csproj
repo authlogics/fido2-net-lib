@@ -1,20 +1,22 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks>$(SupportedTargetFrameworks)</TargetFrameworks>
     <RootNamespace>Fido2NetLib</RootNamespace>
     <PackageId>$(AssemblyName).Intercede</PackageId>
     <Authors>$(AssemblyName), Intercede</Authors>
     <PackageProjectUrl>https://github.com/authlogics/fido2-net-lib</PackageProjectUrl>
     <RepositoryUrl>https://github.com/authlogics/fido2-net-lib</RepositoryUrl>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Fido2\Fido2.csproj" />
     <ProjectReference Include="..\Fido2.Models\Fido2.Models.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
 </Project>

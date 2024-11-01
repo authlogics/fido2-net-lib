@@ -27,9 +27,17 @@ public class AuthenticatorAssertionRawResponse
     public PublicKeyCredentialType? Type { get; set; }
 
     [JsonPropertyName("extensions")]
-    public AuthenticationExtensionsClientOutputs Extensions { get; set; }
+    [Obsolete("Use ClientExtensionResults instead")]
+    public AuthenticationExtensionsClientOutputs Extensions
+    {
+        get => ClientExtensionResults;
+        set => ClientExtensionResults = value;
+    }
 
-    public class AssertionResponse
+    [JsonPropertyName("clientExtensionResults")]
+    public AuthenticationExtensionsClientOutputs ClientExtensionResults { get; set; }
+
+    public sealed class AssertionResponse
     {
         [JsonConverter(typeof(Base64UrlConverter))]
         [JsonPropertyName("authenticatorData")]
@@ -46,9 +54,5 @@ public class AuthenticatorAssertionRawResponse
         [JsonPropertyName("userHandle")]
         [JsonConverter(typeof(Base64UrlConverter))]
         public byte[]? UserHandle { get; set; }
-
-        [JsonPropertyName("attestationObject")]
-        [JsonConverter(typeof(Base64UrlConverter))]
-        public byte[]? AttestationObject { get; set; }
     }
 }

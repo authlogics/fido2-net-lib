@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fido2", "Src\Fido2\Fido2.cs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo", "Demo\Demo.csproj", "{1A7DD7B0-255E-44AD-8BE0-5F833846F444}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{06E82E3F-C626-4070-98BB-6D307DA86AC2}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{80EE6A6B-EA6A-4C01-9EEA-45BE37DB5A2D}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -26,6 +24,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fido2.Ctap2.Tests", "Tests\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fido2.BlazorWebAssembly", "Src\Fido2.BlazorWebAssembly\Fido2.BlazorWebAssembly.csproj", "{F314C16B-3E3D-40E6-9B4F-36142B739478}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fido2.Development", "Src\Fido2.Development\Fido2.Development.csproj", "{08089F2C-A0EE-4B2A-BFE6-B959DEAA4971}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fido2.Tests", "Tests\Fido2.Tests\Fido2.Tests.csproj", "{8DE1B773-5F5A-460C-9811-43506752E063}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,10 +42,6 @@ Global
 		{1A7DD7B0-255E-44AD-8BE0-5F833846F444}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A7DD7B0-255E-44AD-8BE0-5F833846F444}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A7DD7B0-255E-44AD-8BE0-5F833846F444}.Release|Any CPU.Build.0 = Release|Any CPU
-		{06E82E3F-C626-4070-98BB-6D307DA86AC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{06E82E3F-C626-4070-98BB-6D307DA86AC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{06E82E3F-C626-4070-98BB-6D307DA86AC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{06E82E3F-C626-4070-98BB-6D307DA86AC2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{08AA0431-3BBF-49EF-8DEF-5433B3068D92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{08AA0431-3BBF-49EF-8DEF-5433B3068D92}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08AA0431-3BBF-49EF-8DEF-5433B3068D92}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -64,6 +62,22 @@ Global
 		{F314C16B-3E3D-40E6-9B4F-36142B739478}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F314C16B-3E3D-40E6-9B4F-36142B739478}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F314C16B-3E3D-40E6-9B4F-36142B739478}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EC19932-290A-4D92-9603-B0533DD022D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EC19932-290A-4D92-9603-B0533DD022D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EC19932-290A-4D92-9603-B0533DD022D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EC19932-290A-4D92-9603-B0533DD022D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAFF4332-145B-4719-B261-827CEB447A62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAFF4332-145B-4719-B261-827CEB447A62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAFF4332-145B-4719-B261-827CEB447A62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAFF4332-145B-4719-B261-827CEB447A62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08089F2C-A0EE-4B2A-BFE6-B959DEAA4971}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08089F2C-A0EE-4B2A-BFE6-B959DEAA4971}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08089F2C-A0EE-4B2A-BFE6-B959DEAA4971}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08089F2C-A0EE-4B2A-BFE6-B959DEAA4971}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DE1B773-5F5A-460C-9811-43506752E063}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DE1B773-5F5A-460C-9811-43506752E063}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DE1B773-5F5A-460C-9811-43506752E063}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DE1B773-5F5A-460C-9811-43506752E063}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

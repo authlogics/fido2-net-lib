@@ -1,6 +1,6 @@
 # Contributing to Fido2NetLib
 
-The project is open to contributions through PRs. Discussions, feature requests and bug reports are encouraged through [issues](https://github.com/abergs/fido2-net-lib/issues).
+The project is open to contributions through PRs. Discussions, feature requests and bug reports are encouraged through [issues](https://github.com/passwordless-lib/fido2-net-lib/issues).
 
 Since Fido2-net-lib is part of the .NET Foundation, we ask our contributors to abide by their [Code of Conduct](https://dotnetfoundation.org/code-of-conduct).
 
@@ -51,7 +51,7 @@ OS's use different variable names to represent similar settings. Code should con
 For example, when looking for the user's home directory, on Windows the variable is `USERPROFILE` but on most Linux systems it is `HOME`.
 
 ```cs
-var homeDir = Environment.GetEnvironmentVariable("USERPROFILE") 
+var homeDir = Environment.GetEnvironmentVariable("USERPROFILE")
                   ?? Environment.GetEnvironmentVariable("HOME");
 ```
 

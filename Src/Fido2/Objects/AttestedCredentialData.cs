@@ -9,56 +9,56 @@ namespace Fido2NetLib.Objects;
 public sealed class AttestedCredentialData
 {
     /// <summary>
-    /// Minimum length of the attested credential data structure.  AAGUID + credentialID length + credential ID + credential public key.
-    /// <see cref="https://www.w3.org/TR/webauthn/#attested-credential-data"/>
+    /// Minimum length of the attested credential data structure. AAGUID + credentialID length + credential ID + credential public key.
+    /// <see href="https://www.w3.org/TR/webauthn/#attested-credential-data"/>
     /// </summary>
     private const int _minLength = 20; // Marshal.SizeOf(typeof(Guid)) + sizeof(ushort) + sizeof(byte) + sizeof(byte)
 
     private const int _maxCredentialIdLength = 1_023;
 
     /// <summary>
-    /// Instantiates an AttestedCredentialData object from an aaguid, credentialID, and CredentialPublicKey
+    /// Instantiates an AttestedCredentialData object from an aaguid, credentialId, and credentialPublicKey
     /// </summary>
     /// <param name="aaGuid"></param>
-    /// <param name="credentialID"></param>
+    /// <param name="credentialId"></param>
     /// <param name="credentialPublicKey"></param>
-    public AttestedCredentialData(Guid aaGuid, byte[] credentialID, CredentialPublicKey credentialPublicKey)
+    public AttestedCredentialData(Guid aaGuid, byte[] credentialId, CredentialPublicKey credentialPublicKey)
     {
-        ArgumentNullException.ThrowIfNull(credentialID);
+        ArgumentNullException.ThrowIfNull(credentialId);
         ArgumentNullException.ThrowIfNull(credentialPublicKey);
 
         AaGuid = aaGuid;
-        CredentialID = credentialID;
+        CredentialId = credentialId;
         CredentialPublicKey = credentialPublicKey;
     }
 
     /// <summary>
     /// The AAGUID of the authenticator. Can be used to identify the make and model of the authenticator.
-    /// <see cref="https://www.w3.org/TR/webauthn/#aaguid"/>
+    /// <see href="https://www.w3.org/TR/webauthn/#aaguid"/>
     /// </summary>
     public Guid AaGuid { get; }
 
     /// <summary>
     /// A probabilistically-unique byte sequence identifying a public key credential source and its authentication assertions.
-    /// <see cref="https://www.w3.org/TR/webauthn/#credential-id"/>
+    /// <see href="https://www.w3.org/TR/webauthn/#credential-id"/>
     /// </summary>
-    public byte[] CredentialID { get; }
+    public byte[] CredentialId { get; }
 
     /// <summary>
-    /// The credential public key encoded in COSE_Key format, as defined in 
+    /// The credential public key encoded in COSE_Key format, as defined in
     /// Section 7 of RFC8152, using the CTAP2 canonical CBOR encoding form.
-    /// <see cref="https://www.w3.org/TR/webauthn/#credential-public-key"/>
+    /// <see href="https://www.w3.org/TR/webauthn/#credential-public-key"/>
     /// </summary>
     public CredentialPublicKey CredentialPublicKey { get; }
 
     public override string ToString()
     {
-        return $"AttestedCredentialData(AAGUID:{AaGuid}, CredentialID: {Convert.ToHexString(CredentialID)}, CredentialPublicKey: {CredentialPublicKey})";
+        return $"AttestedCredentialData(AAGUID:{AaGuid}, CredentialId: {Convert.ToHexString(CredentialId)}, CredentialPublicKey: {CredentialPublicKey})";
     }
 
     public byte[] ToByteArray()
     {
-        var writer = new ArrayBufferWriter<byte>(16 + 2 + CredentialID.Length + 512);
+        var writer = new ArrayBufferWriter<byte>(16 + 2 + CredentialId.Length + 512);
 
         WriteTo(writer);
 
@@ -70,10 +70,10 @@ public sealed class AttestedCredentialData
         writer.WriteGuidBigEndian(AaGuid);
 
         // Write the length of credential ID, as big endian bytes of a 16-bit unsigned integer
-        writer.WriteUInt16BigEndian((ushort)CredentialID.Length);
+        writer.WriteUInt16BigEndian((ushort)CredentialId.Length);
 
-        // Write CredentialID bytes
-        writer.Write(CredentialID);
+        // Write CredentialId bytes
+        writer.Write(CredentialId);
 
         // Write credential public key bytes
         writer.Write(CredentialPublicKey.GetBytes());
@@ -99,12 +99,9 @@ public sealed class AttestedCredentialData
 
         position += 16;
 
-#if NET8_0_OR_GREATER
-        Guid aaGuid = new Guid(aaGuidBytes, isBigEndian: true);
-#else
-        Guid aaGuid = GuidHelper.FromBigEndian(aaGuidBytes.ToArray());
-#endif
-        // Byte length of Credential ID, 16-bit unsigned big-endian integer. 
+        var aaGuid = new Guid(aaGuidBytes.Span, bigEndian: true);
+
+        // Byte length of Credential ID, 16-bit unsigned big-endian integer.
         var credentialIDLen = BinaryPrimitives.ReadUInt16BigEndian(data.Slice(position, 2).Span);
         if (credentialIDLen > _maxCredentialIdLength)
             throw new Fido2VerificationException(Fido2ErrorCode.InvalidAttestedCredentialData, Fido2ErrorMessages.InvalidAttestedCredentialData_CredentialIdTooLong);
@@ -116,8 +113,8 @@ public sealed class AttestedCredentialData
 
         position += credentialIDLen;
 
-        // "Determining attested credential data's length, which is variable, involves determining 
-        // credentialPublicKey's beginning location given the preceding credentialId's length, and 
+        // "Determining attested credential data's length, which is variable, involves determining
+        // credentialPublicKey's beginning location given the preceding credentialId's length, and
         // then determining the credentialPublicKey's length"
 
 

@@ -1,10 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFrameworks>$(SupportedTargetFrameworks)</TargetFrameworks>
-    <Nullable>enable</Nullable>
     <RootNamespace>Fido2NetLib</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
     <IsTrimmable>true</IsTrimmable>
-    <NoWarn>IDE0057</NoWarn>
+    <NoWarn>$(NoWarn);IDE0057</NoWarn>
+    <IsPackable>true</IsPackable>
     <LangVersion>11</LangVersion>
     <PackageId>$(AssemblyName).Intercede</PackageId>
     <Authors>$(AssemblyName), Intercede</Authors>
@@ -27,20 +30,24 @@
     <None Remove="StaticMetadataRepository.cs" />
   </ItemGroup>
 
-  <!-- References -->
   <ItemGroup>
     <ProjectReference Include="..\Fido2.Models\Fido2.Models.csproj" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="NSec.Cryptography" Version="22.4.0" />
-    <PackageReference Include="System.Formats.Cbor" Version="6.0.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.32.1" />
+    <PackageReference Include="System.Formats.Cbor" Version="8.0.0" />
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.2.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- 
+    <InternalsVisibleTo Include="Fido2.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
       The name of the file must equal to the name of the package which is currently
-      defaulting to the project file name (excluding file extension of course)...
+      defaulting to the project file name (excluding file extension of course).
     -->
     <Content Include="build\fido2.intercede.targets" PackagePath="build/" />
   </ItemGroup>
+
 </Project>
