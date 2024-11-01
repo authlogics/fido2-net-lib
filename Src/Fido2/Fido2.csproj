@@ -6,6 +6,10 @@
     <IsTrimmable>true</IsTrimmable>
     <NoWarn>IDE0057</NoWarn>
     <LangVersion>11</LangVersion>
+    <PackageId>$(AssemblyName).Intercede</PackageId>
+    <Authors>$(AssemblyName), Intercede</Authors>
+    <PackageProjectUrl>https://github.com/authlogics/fido2-net-lib</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/authlogics/fido2-net-lib</RepositoryUrl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
@@ -15,6 +19,7 @@
   </PropertyGroup>
    
   <ItemGroup>
+    <None Remove="build\fido2.intercede.targets" />
     <None Remove="Fido2MetadataServiceRepository.cs" />
     <None Remove="FileSystemMetadataRepository.cs" />
     <None Remove="IMetadataRepository.cs" />
@@ -36,6 +41,6 @@
       The name of the file must equal to the name of the package which is currently
       defaulting to the project file name (excluding file extension of course)...
     -->
-    <Content Include="build/fido2.targets" PackagePath="build/" />
+    <Content Include="build\fido2.intercede.targets" PackagePath="build/" />
   </ItemGroup>
 </Project>
