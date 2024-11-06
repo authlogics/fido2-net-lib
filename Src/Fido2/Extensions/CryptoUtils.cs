@@ -62,7 +62,9 @@ internal static class CryptoUtils
         // Let's check the simplest case first.  If subject and issuer are the same, and the attestation cert is in the list, that's all the validation we need
 
         // We have the same singular root cert in trustpath and it is in attestationRootCertificates
-        if (trustPath.Length == 1 && trustPath[0].Subject.Equals(trustPath[0].Issuer, StringComparison.Ordinal))
+        // See https://github.com/passwordless-lib/fido2-net-lib/pull/554 for conformance testing
+        //if (trustPath.Length == 1 && trustPath[0].Subject.Equals(trustPath[0].Issuer, StringComparison.Ordinal))
+        if (trustPath.Length == 1)
         {
             foreach (X509Certificate2 cert in attestationRootCertificates)
             {

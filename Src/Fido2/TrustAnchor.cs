@@ -31,12 +31,12 @@ public static class TrustAnchor
 
                 if (trustPath.Length > 1 && attestationRootCertificates.Any(c => string.Equals(c.Thumbprint, trustPath[^1].Thumbprint, StringComparison.Ordinal)))
                 {
-                    throw new Fido2VerificationException(Fido2ErrorMessages.InvalidCertificateChain);
+                    throw new Fido2VerificationException(Fido2ErrorMessages.InvalidCertificateChain + "-1");
                 }
 
                 if (!CryptoUtils.ValidateTrustChain(trustPath, attestationRootCertificates, validationMode))
                 {
-                    throw new Fido2VerificationException(Fido2ErrorMessages.InvalidCertificateChain);
+                    throw new Fido2VerificationException(Fido2ErrorMessages.InvalidCertificateChain + "-2");
                 }
             }
 
