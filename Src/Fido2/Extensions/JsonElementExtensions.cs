@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace Fido2NetLib;
 
-internal static class JsonElementExtensions
+public static class JsonElementExtensions
 {
     public static string[] ToStringArray(this in JsonElement el)
     {

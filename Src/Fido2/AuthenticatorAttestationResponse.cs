@@ -145,7 +145,7 @@ public sealed class AuthenticatorAttestationResponse : AuthenticatorResponse
 
         // while conformance testing, we must reject any authenticator that we cannot get metadata for
         if (metadataService?.ConformanceTesting() is true && metadataEntry is null && attType != AttestationType.None && AttestationObject.Fmt is not "fido-u2f")
-            throw new Fido2VerificationException(Fido2ErrorCode.AaGuidNotFound, "AAGUID not found in MDS test metadata");
+            throw new Fido2VerificationException(Fido2ErrorCode.AaGuidNotFound, $"AAGUID not found in MDS test metadata ({authData.AttestedCredentialData.AaGuid})");
 
         TrustAnchor.Verify(metadataEntry, trustPath, metadataService?.ConformanceTesting() is true ? FidoValidationMode.FidoConformance2024 : FidoValidationMode.Default);
 
