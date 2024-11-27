@@ -50,8 +50,10 @@ public static class CryptoUtils
         };
     }
 
-    public static bool ValidateTrustChain(X509Certificate2[] trustPath, X509Certificate2[] attestationRootCertificates, FidoValidationMode validationMode = FidoValidationMode.Default)
+    public static (bool Result, string Status) ValidateTrustChain(X509Certificate2[] trustPath, X509Certificate2[] attestationRootCertificates, FidoValidationMode validationMode = FidoValidationMode.Default)
     {
+        var builder = new StringBuilder("Validating Trust Chain.");
+
         // https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-metadata-statement-v2.0-id-20180227.html#widl-MetadataStatement-attestationRootCertificates
 
         // Each element of this array represents a PKIX [RFC5280] X.509 certificate that is a valid trust anchor for this authenticator model.
@@ -66,17 +68,23 @@ public static class CryptoUtils
         //if (trustPath.Length == 1 && trustPath[0].Subject.Equals(trustPath[0].Issuer, StringComparison.Ordinal))
         if (trustPath.Length == 1)
         {
+            builder.Append(" Trust path has only one element. Checking thumbprints in attestationRootCertificates.");
             foreach (X509Certificate2 cert in attestationRootCertificates)
             {
+                builder.Append($" Checking thumbprint in cert: {cert.Thumbprint} against trust path thumbprint: {trustPath[0].Thumbprint}.");
+
                 if (cert.Thumbprint.Equals(trustPath[0].Thumbprint, StringComparison.Ordinal))
                 {
-                    return true;
+                    builder.Append(" Found matching thumbprint. Returning true.");
+                    return (true, builder.ToString());
                 }
             }
         }
 
         // If the attestation cert is not self signed, we will need to build a chain
         var chain = new X509Chain();
+
+        builder.Append(" Created new x509 chain.");
 
         // Put all potential trust anchors into extra store
         chain.ChainPolicy.ExtraStore.AddRange(attestationRootCertificates);
@@ -92,6 +100,8 @@ public static class CryptoUtils
             {
                 chain.ChainPolicy.ExtraStore.Add(cert);
             }
+
+            builder.Append($" Added additional certs to chain: {trustPath.Length}");
         }
 
         // try to build a chain with what we've got
@@ -106,7 +116,10 @@ public static class CryptoUtils
 
             // if the attestation cert has a CDP extension, go ahead and turn on online revocation checking
             if (!string.IsNullOrEmpty(CDPFromCertificateExts(trustPath[0].Extensions)) && validationMode != FidoValidationMode.FidoConformance2024)
+            {
                 chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
+                builder.Append($" Added online revocation check.");
+            }
 
             // don't allow unknown root now that we have a custom root
             chain.ChainPolicy.VerificationFlags = X509VerificationFlags.NoFlag;
@@ -118,15 +131,22 @@ public static class CryptoUtils
                 foreach (X509Certificate2? attestationRootCertificate in attestationRootCertificates)
                 {
                     // skip the first element, as that is the attestation cert
-                    if (chain.ChainElements
-                        .Skip(1)
-                        .Any(x => x.Certificate.Thumbprint.Equals(attestationRootCertificate.Thumbprint, StringComparison.Ordinal)))
-                        return true;
+                    if (chain.ChainElements.Skip(1).Any(x => x.Certificate.Thumbprint.Equals(attestationRootCertificate.Thumbprint, StringComparison.Ordinal)))
+                    {
+                        builder.Append($" Found matching thumbprints in chain.");
+                        return (true, builder.ToString());
+                    }
                 }
+
+                builder.Append($" Chain was built successfully but no matching thumbprints were found.");
+            }
+            else
+            {
+                builder.Append($" Chain did not build successfully.");
             }
         }
 
-        return false;
+        return (false, builder.ToString());
     }
 
     public static byte[] SigFromEcDsaSig(byte[] ecDsaSig, int keySize)

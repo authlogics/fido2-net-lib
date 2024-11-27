@@ -12,11 +12,6 @@ public static class TrustAnchor
     {
         if (trustPath != null && metadataEntry?.MetadataStatement?.AttestationTypes is not null)
         {
-            static bool ContainsAttestationType(MetadataBLOBPayloadEntry entry, MetadataAttestationType type)
-            {
-                return entry.MetadataStatement.AttestationTypes.Contains(type.ToEnumMemberValue());
-            }
-
             // If the authenticator's metadata requires basic full attestation, build and verify the chain
             if (ContainsAttestationType(metadataEntry, MetadataAttestationType.ATTESTATION_BASIC_FULL) ||
                 ContainsAttestationType(metadataEntry, MetadataAttestationType.ATTESTATION_PRIVACY_CA))
@@ -31,12 +26,14 @@ public static class TrustAnchor
 
                 if (trustPath.Length > 1 && attestationRootCertificates.Any(c => string.Equals(c.Thumbprint, trustPath[^1].Thumbprint, StringComparison.Ordinal)))
                 {
-                    throw new Fido2VerificationException(Fido2ErrorMessages.InvalidCertificateChain + "-1");
+                    throw new Fido2VerificationException($"{Fido2ErrorMessages.InvalidCertificateChain}");
                 }
 
-                if (!CryptoUtils.ValidateTrustChain(trustPath, attestationRootCertificates, validationMode))
+                var validation = CryptoUtils.ValidateTrustChain(trustPath, attestationRootCertificates, validationMode);
+
+                if (!validation.Result)
                 {
-                    throw new Fido2VerificationException(Fido2ErrorMessages.InvalidCertificateChain + "-2");
+                    throw new Fido2VerificationException($"{Fido2ErrorMessages.InvalidCertificateChain}. {validation.Status}");
                 }
             }
 
@@ -61,5 +58,10 @@ public static class TrustAnchor
             // [ ] ATTESTATION_ANONCA "anonca"  | currently not verified            w/ no test coverage
             // [ ] ATTESTATION_NONE "none"      | currently handled as self signed  w/ no test coverage
         }
+    }
+
+    private static bool ContainsAttestationType(MetadataBLOBPayloadEntry entry, MetadataAttestationType type)
+    {
+        return entry.MetadataStatement.AttestationTypes.Contains(type.ToEnumMemberValue());
     }
 }

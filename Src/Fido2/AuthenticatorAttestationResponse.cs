@@ -147,7 +147,14 @@ public sealed class AuthenticatorAttestationResponse : AuthenticatorResponse
         if (metadataService?.ConformanceTesting() is true && metadataEntry is null && attType != AttestationType.None && AttestationObject.Fmt is not "fido-u2f")
             throw new Fido2VerificationException(Fido2ErrorCode.AaGuidNotFound, $"AAGUID not found in MDS test metadata ({authData.AttestedCredentialData.AaGuid})");
 
-        TrustAnchor.Verify(metadataEntry, trustPath, metadataService?.ConformanceTesting() is true ? FidoValidationMode.FidoConformance2024 : FidoValidationMode.Default);
+        try
+        {
+            TrustAnchor.Verify(metadataEntry, trustPath, metadataService?.ConformanceTesting() is true ? FidoValidationMode.FidoConformance2024 : FidoValidationMode.Default);
+        }
+        catch (Exception ex)
+        {
+            throw new ApplicationException($"TrustAnchor.Verify failed for metadata entry guid: {metadataEntry?.AaGuid} and AttestationObject.Fmt: {AttestationObject.Fmt}. {ex}");
+        }
 
         // 22. Assess the attestation trustworthiness using the outputs of the verification procedure in step 14, as follows:
         //     If self attestation was used, check if self attestation is acceptable under Relying Party policy.
