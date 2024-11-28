@@ -8,14 +8,48 @@ namespace Fido2NetLib;
 
 public static class TrustAnchor
 {
+    public static string LastMetadataAaGuid { get; private set; }
+    public static string LastValidationStatus { get; private set; }
+    public static string[] LastTrustPath { get; private set; }
+    public static string[] LastAttestationRootCertificates { get; private set; }
+
+    public static bool LastIsAttestationBasicFull { get; private set; }
+    public static bool LastIsAttestationPrivacyCA { get; private set; }
+
+    //Static constructor for non nullable properties
+    static TrustAnchor()
+    {
+        LastMetadataAaGuid = "";
+        LastValidationStatus = "";
+        LastTrustPath = [];
+        LastAttestationRootCertificates = [];
+    }
+
     public static void Verify(MetadataBLOBPayloadEntry? metadataEntry, X509Certificate2[] trustPath, FidoValidationMode validationMode = FidoValidationMode.Default)
     {
+        //Clear status values
+        LastMetadataAaGuid = "";
+        LastValidationStatus = "";
+        LastTrustPath = [];
+        LastAttestationRootCertificates = [];
+        LastIsAttestationBasicFull = false;
+        LastIsAttestationPrivacyCA = false;
+
         if (trustPath != null && metadataEntry?.MetadataStatement?.AttestationTypes is not null)
         {
+            LastMetadataAaGuid = metadataEntry.AaGuid.ToString() ?? "";
+            LastTrustPath = trustPath.Select(c => c.ExportCertificatePem()).ToArray();
+
+            //Work out attestation type
+            var isAttestationBasicFull = ContainsAttestationType(metadataEntry, MetadataAttestationType.ATTESTATION_BASIC_FULL);
+            var isAttestationPrivacyCA = ContainsAttestationType(metadataEntry, MetadataAttestationType.ATTESTATION_PRIVACY_CA);
+
             // If the authenticator's metadata requires basic full attestation, build and verify the chain
-            if (ContainsAttestationType(metadataEntry, MetadataAttestationType.ATTESTATION_BASIC_FULL) ||
-                ContainsAttestationType(metadataEntry, MetadataAttestationType.ATTESTATION_PRIVACY_CA))
+            if (isAttestationBasicFull || isAttestationPrivacyCA)
             {
+                LastIsAttestationBasicFull = isAttestationBasicFull;
+                LastIsAttestationPrivacyCA = isAttestationPrivacyCA;
+
                 string[] certStrings = metadataEntry.MetadataStatement.AttestationRootCertificates;
                 var attestationRootCertificates = new X509Certificate2[certStrings.Length];
 
@@ -24,16 +58,19 @@ public static class TrustAnchor
                     attestationRootCertificates[i] = new X509Certificate2(Convert.FromBase64String(certStrings[i]));
                 }
 
+                LastAttestationRootCertificates = attestationRootCertificates.Select(c => c.ExportCertificatePem()).ToArray();
+
                 if (trustPath.Length > 1 && attestationRootCertificates.Any(c => string.Equals(c.Thumbprint, trustPath[^1].Thumbprint, StringComparison.Ordinal)))
                 {
-                    throw new Fido2VerificationException($"{Fido2ErrorMessages.InvalidCertificateChain}");
+                    throw new Fido2VerificationException(Fido2ErrorMessages.InvalidCertificateChain);
                 }
 
                 var validation = CryptoUtils.ValidateTrustChain(trustPath, attestationRootCertificates, validationMode);
+                LastValidationStatus = validation.Status;
 
                 if (!validation.Result)
                 {
-                    throw new Fido2VerificationException($"{Fido2ErrorMessages.InvalidCertificateChain}. {validation.Status}");
+                    throw new Fido2VerificationException(Fido2ErrorMessages.InvalidCertificateChainFull);
                 }
             }
 

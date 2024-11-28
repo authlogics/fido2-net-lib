@@ -11,6 +11,14 @@ namespace Fido2NetLib;
 
 public static class CryptoUtils
 {
+    public static string[] LastChainStatus { get; set; }
+    public static string[] LastChainStatusInformation { get; set; }
+
+    static CryptoUtils()
+    {
+        LastChainStatus = [];
+        LastChainStatusInformation = [];
+    }
     public static byte[] HashData(HashAlgorithmName hashName, ReadOnlySpan<byte> data)
     {
         #pragma warning disable format
@@ -53,6 +61,10 @@ public static class CryptoUtils
     public static (bool Result, string Status) ValidateTrustChain(X509Certificate2[] trustPath, X509Certificate2[] attestationRootCertificates, FidoValidationMode validationMode = FidoValidationMode.Default)
     {
         var builder = new StringBuilder("Validating Trust Chain.");
+
+        //Reset the chain status's
+        LastChainStatus = [];
+        LastChainStatusInformation = [];
 
         // https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-metadata-statement-v2.0-id-20180227.html#widl-MetadataStatement-attestationRootCertificates
 
@@ -142,8 +154,16 @@ public static class CryptoUtils
             }
             else
             {
-                builder.Append($" Chain did not build successfully.");
+                builder.Append($" Chain did not build successfully post checks.");
+                LastChainStatus = chain.ChainStatus.Select(s => s.Status.ToString()).ToArray();
+                LastChainStatusInformation = chain.ChainStatus.Select(s => s.StatusInformation).ToArray();
             }
+        }
+        else
+        {
+            builder.Append($" Chain did not build successfully pre checks.");
+            LastChainStatus = chain.ChainStatus.Select(s => s.Status.ToString()).ToArray();
+            LastChainStatusInformation = chain.ChainStatus.Select(s => s.StatusInformation).ToArray();
         }
 
         return (false, builder.ToString());
