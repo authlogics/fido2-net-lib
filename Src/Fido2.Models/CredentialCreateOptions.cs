@@ -238,7 +238,7 @@ public class AuthenticatorSelection
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public AuthenticatorAttachment? AuthenticatorAttachment { get; set; }
 
-    private ResidentKeyRequirement _residentKey;
+    private ResidentKeyRequirement _residentKey = ResidentKeyRequirement.Discouraged;
 
     /// <summary>
     /// Specifies the extent to which the Relying Party desires to create a client-side discoverable credential.
