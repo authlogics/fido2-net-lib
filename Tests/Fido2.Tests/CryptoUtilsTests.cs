@@ -45,10 +45,10 @@ public class CryptoUtilsTests
             new X509Certificate2(Convert.FromBase64String("MIICQzCCAemgAwIBAgIQHfK1WlHcS2iFo9meaX/tFjAKBggqhkjOPQQDAjBJMQswCQYDVQQGEwJVUzEdMBsGA1UECgwURmVpdGlhbiBUZWNobm9sb2dpZXMxGzAZBgNVBAMMEkZlaXRpYW4gRklETyBDQSAwMzAgFw0xODEyMjUwMDAwMDBaGA8yMDMzMTIyNDIzNTk1OVowcDELMAkGA1UEBhMCVVMxHTAbBgNVBAoMFEZlaXRpYW4gVGVjaG5vbG9naWVzMSIwIAYDVQQLDBlBdXRoZW50aWNhdG9yIEF0dGVzdGF0aW9uMR4wHAYDVQQDDBVGVCBCaW9QYXNzIEZJRE8yIDA0NzAwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAS62hIbyenH9WPnzYHehaBR3C7qswomZkaPzGyUlFRiJIMo3uITeImFOFfNcDuOzoq1wcXXGTmEtEtxF2wo9noko4GJMIGGMB0GA1UdDgQWBBSBI1XoLDY1/HJaba+W32nxhxp3WjAfBgNVHSMEGDAWgBRBt/xNdcqO0p8s0xebzYNRinnYqTAMBgNVHRMBAf8EAjAAMBMGCysGAQQBguUcAgEBBAQDAgRwMCEGCysGAQQBguUcAQEEBBIEEBLe10VL7UfUq6rnE/UdY5MwCgYIKoZIzj0EAwIDSAAwRQIhAI6GSVi10r673uqtso+2oB6f5S5gE0ff44t3NcQ+TN9NAiAC/SCP+eKw1BnmcSgbxcQpYuWjBPMVDfqeg8pbmOdHKw==")),
             new X509Certificate2(Convert.FromBase64String("MIIB+TCCAaCgAwIBAgIQGBUrQbdDrm20FZnDsX2CCDAKBggqhkjOPQQDAjBLMQswCQYDVQQGEwJVUzEdMBsGA1UECgwURmVpdGlhbiBUZWNobm9sb2dpZXMxHTAbBgNVBAMMFEZlaXRpYW4gRklETyBSb290IENBMCAXDTE4MDUyMDAwMDAwMFoYDzIwMzgwNTE5MjM1OTU5WjBJMQswCQYDVQQGEwJVUzEdMBsGA1UECgwURmVpdGlhbiBUZWNobm9sb2dpZXMxGzAZBgNVBAMMEkZlaXRpYW4gRklETyBDQSAwMzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJts1KYQuj66rAszKKLfsOay91gO11vSvfcYd/dQfeTjpSNb55ffoLijQbRXspqE5Uj2NVylED61pjo2tpytOfijZjBkMB0GA1UdDgQWBBRBt/xNdcqO0p8s0xebzYNRinnYqTAfBgNVHSMEGDAWgBRLvYcmEa0cic8EWL5w0giMaxYjtzASBgNVHRMBAf8ECDAGAQH/AgEAMA4GA1UdDwEB/wQEAwIBBjAKBggqhkjOPQQDAgNHADBEAiAnSuhaqHgV3Sds/OrwiqLNUWMmU8Lji9Vy7s5hSEg22AIgE1lIdBjq0N+QcZq995uOE4XWxBIrVUio3RAwgDn8KgI="))
         };
-        Assert.True(CryptoUtils.ValidateTrustChain(trustPath, attestationRootCertificates));
-        Assert.False(CryptoUtils.ValidateTrustChain(trustPath, trustPath));
-        Assert.False(CryptoUtils.ValidateTrustChain(attestationRootCertificates, attestationRootCertificates));
-        Assert.False(CryptoUtils.ValidateTrustChain(attestationRootCertificates, trustPath));
+        Assert.True(CryptoUtils.ValidateTrustChain(trustPath, attestationRootCertificates).Result);
+        Assert.False(CryptoUtils.ValidateTrustChain(trustPath, trustPath).Result);
+        Assert.False(CryptoUtils.ValidateTrustChain(attestationRootCertificates, attestationRootCertificates).Result);
+        Assert.False(CryptoUtils.ValidateTrustChain(attestationRootCertificates, trustPath).Result);
     }
 
     [Fact]
@@ -65,10 +65,10 @@ public class CryptoUtilsTests
         var trustPath = new X509Certificate2[1] { new X509Certificate2(attCert) };
 
         Assert.False(0 == attestationRootCertificates[0].Issuer.CompareTo(attestationRootCertificates[0].Subject));
-        Assert.True(CryptoUtils.ValidateTrustChain(trustPath, attestationRootCertificates));
-        Assert.False(CryptoUtils.ValidateTrustChain(trustPath, trustPath));
-        Assert.False(CryptoUtils.ValidateTrustChain(attestationRootCertificates, attestationRootCertificates));
-        Assert.False(CryptoUtils.ValidateTrustChain(attestationRootCertificates, trustPath));
+        Assert.True(CryptoUtils.ValidateTrustChain(trustPath, attestationRootCertificates).Result);
+        Assert.False(CryptoUtils.ValidateTrustChain(trustPath, trustPath).Result);
+        Assert.False(CryptoUtils.ValidateTrustChain(attestationRootCertificates, attestationRootCertificates).Result);
+        Assert.False(CryptoUtils.ValidateTrustChain(attestationRootCertificates, trustPath).Result);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class CryptoUtilsTests
         byte[] otherCertBytes = Convert.FromBase64String("MIIDRjCCAu2gAwIBAgIUZPhSDtxI5lg2qgy+7IGDJhGqPOgwCgYIKoZIzj0EAwIwgYcxCzAJBgNVBAYTAlRXMQ8wDQYDVQQIDAZUYWlwZWkxEjAQBgNVBAcMCVNvbWV3aGVyZTEWMBQGA1UECgwNV2lTRUNVUkUgSW5jLjEgMB4GCSqGSIb3DQEJARYRYWRtaW5AZXhhbXBsZS5vcmcxGTAXBgNVBAMMEFdpU0VDVVJFIFJvb3QgQ0EwHhcNMjEwMTI4MDgyNzIwWhcNMzEwMTI2MDgyNzIwWjCBhzELMAkGA1UEBhMCVFcxDzANBgNVBAgMBlRhaXBlaTESMBAGA1UEBwwJU29tZXdoZXJlMRYwFAYDVQQKDA1XaVNFQ1VSRSBJbmMuMSAwHgYJKoZIhvcNAQkBFhFhZG1pbkBleGFtcGxlLm9yZzEZMBcGA1UEAwwQV2lTRUNVUkUgUm9vdCBDQTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABBiWvFaf/IhFMOWNqlweqr4GfO0mu/1B18J03OG+pSltRix9GjRojBya4LARyXMP8nw2Xh9PvwOBm9QedMC66XGjggEzMIIBLzAdBgNVHQ4EFgQUd+Yvj6I3Y8cKH3QRNLlC8/Op97cwgccGA1UdIwSBvzCBvIAUd+Yvj6I3Y8cKH3QRNLlC8/Op97ehgY2kgYowgYcxCzAJBgNVBAYTAlRXMQ8wDQYDVQQIDAZUYWlwZWkxEjAQBgNVBAcMCVNvbWV3aGVyZTEWMBQGA1UECgwNV2lTRUNVUkUgSW5jLjEgMB4GCSqGSIb3DQEJARYRYWRtaW5AZXhhbXBsZS5vcmcxGTAXBgNVBAMMEFdpU0VDVVJFIFJvb3QgQ0GCFGT4Ug7cSOZYNqoMvuyBgyYRqjzoMAwGA1UdEwEB/wQCMAAwNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL3d3dy5leGFtcGxlLm9yZy9leGFtcGxlX2NhLmNybDAKBggqhkjOPQQDAgNHADBEAiBf3p8LJ3PlfMsxTzWgjHaal6uzIo5tx3o+EUybdDY4ogIgV6nR1MUE1wKz1uC7/kENg/FpJOetFaJePcgoneEwsKA=");
         var otherCerts = new X509Certificate2[1] { new X509Certificate2(otherCertBytes) };
 
-        Assert.True(CryptoUtils.ValidateTrustChain(certs, certs));
-        Assert.False(CryptoUtils.ValidateTrustChain(certs, otherCerts));
+        Assert.True(CryptoUtils.ValidateTrustChain(certs, certs).Result);
+        Assert.False(CryptoUtils.ValidateTrustChain(certs, otherCerts).Result);
     }
 }
