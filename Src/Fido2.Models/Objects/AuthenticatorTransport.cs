@@ -50,5 +50,5 @@ public enum AuthenticatorTransport
     /// These authenticators are not removable from the client device.
     /// </summary>
     [EnumMember(Value = "internal")]
-    Internal,
+    Internal
 }

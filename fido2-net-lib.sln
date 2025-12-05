@@ -22,10 +22,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fido2.Ctap2.Tests", "Tests\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fido2.BlazorWebAssembly", "Src\Fido2.BlazorWebAssembly\Fido2.BlazorWebAssembly.csproj", "{F314C16B-3E3D-40E6-9B4F-36142B739478}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorWasmDemo.Server", "BlazorWasmDemo\Server\BlazorWasmDemo.Server.csproj", "{0EC19932-290A-4D92-9603-B0533DD022D9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorWasmDemo.Client", "BlazorWasmDemo\Client\BlazorWasmDemo.Client.csproj", "{EAFF4332-145B-4719-B261-827CEB447A62}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fido2.Development", "Src\Fido2.Development\Fido2.Development.csproj", "{08089F2C-A0EE-4B2A-BFE6-B959DEAA4971}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fido2.Tests", "Tests\Fido2.Tests\Fido2.Tests.csproj", "{8DE1B773-5F5A-460C-9811-43506752E063}"

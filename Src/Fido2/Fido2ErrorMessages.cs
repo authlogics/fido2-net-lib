@@ -26,6 +26,7 @@ internal static class Fido2ErrorMessages
     public static readonly string MalformedAttestationObject             = "Malformed AttestationObject";
     public static readonly string UserPresentFlagNotSet                  = "User Present flag not set in authenticator data";
     public static readonly string InvalidCertificateChain                = "Invalid certificate chain";
+    public static readonly string InvalidCertificateChainFull            = "Invalid certificate chain (full)";
     public static readonly string UserHandleIsEmpty                      = "UserHandle was empty DOMString. It should either be null or have a value.";
     public static readonly string InvalidAttestedCredentialData_TooShort = "Not enough bytes to be a valid AttestedCredentialData";
     public static readonly string InvalidAttestedCredentialData_CredentialIdTooLong = "CredentialId too many bytes";

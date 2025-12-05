@@ -5,7 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Fido2NetLib;
 
-internal static class X509CertificateHelper
+public static class X509CertificateHelper
 {
     public static X509Certificate2 CreateFromBase64String(ReadOnlySpan<byte> base64String)
     {

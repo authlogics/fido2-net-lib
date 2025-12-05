@@ -8,7 +8,27 @@
     <IsTrimmable>true</IsTrimmable>
     <NoWarn>$(NoWarn);IDE0057</NoWarn>
     <IsPackable>true</IsPackable>
+    <LangVersion>12</LangVersion>
+    <PackageId>$(AssemblyName).Intercede</PackageId>
+    <Authors>$(AssemblyName), Intercede</Authors>
+    <PackageProjectUrl>https://github.com/authlogics/fido2-net-lib</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/authlogics/fido2-net-lib</RepositoryUrl>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+   
+  <ItemGroup>
+    <None Remove="build\fido2.intercede.targets" />
+    <None Remove="Fido2MetadataServiceRepository.cs" />
+    <None Remove="FileSystemMetadataRepository.cs" />
+    <None Remove="IMetadataRepository.cs" />
+    <None Remove="Metadata\ConformanceMetadataRepository.cs" />
+    <None Remove="StaticMetadataRepository.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Fido2.Models\Fido2.Models.csproj" />
@@ -27,7 +47,7 @@
       The name of the file must equal to the name of the package which is currently
       defaulting to the project file name (excluding file extension of course).
     -->
-    <Content Include="build/fido2.targets" PackagePath="build/" />
+    <Content Include="build\fido2.intercede.targets" PackagePath="build/" />
   </ItemGroup>
 
 </Project>
