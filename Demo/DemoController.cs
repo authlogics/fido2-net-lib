@@ -20,6 +20,22 @@ public class DemoController : Controller
         _fido2 = fido2;
     }
 
+    // Advertise all supported COSE algorithms to the client during registration,
+    // with the new post-quantum ML-DSA algorithms (COSE -48, -49, -50) listed
+    // ahead of classical RSA/ECC so authenticators that support them are
+    // preferred. See Documentation/MLDSA-Support.md.
+    private static readonly IReadOnlyList<PubKeyCredParam> _pubKeyCredParams =
+    [
+        // Post-quantum (ML-DSA) — preferred
+        PubKeyCredParam.ML_DSA_44,
+        PubKeyCredParam.ML_DSA_65,
+        PubKeyCredParam.ML_DSA_87,
+        // Classical fallbacks — limited to algorithms supported by real authenticators
+        PubKeyCredParam.ES256,     // Required by CTAP2; supported by virtually all authenticators
+        PubKeyCredParam.RS256,     // Windows Hello, platform authenticators
+        PubKeyCredParam.Ed25519,   // Newer YubiKeys (5+), some recent authenticators
+    ];
+
     private string FormatException(Exception e)
     {
         return string.Format("{0}{1}", e.Message, e.InnerException != null ? " (" + e.InnerException.Message + ")" : "");
@@ -70,7 +86,7 @@ public class DemoController : Controller
                 CredProps = true
             };
 
-            var options = _fido2.RequestNewCredential(new RequestNewCredentialParams { User = user, ExcludeCredentials = existingKeys, AuthenticatorSelection = authenticatorSelection, AttestationPreference = attType.ToEnum<AttestationConveyancePreference>(), Extensions = exts });
+            var options = _fido2.RequestNewCredential(new RequestNewCredentialParams { User = user, ExcludeCredentials = existingKeys, AuthenticatorSelection = authenticatorSelection, AttestationPreference = attType.ToEnum<AttestationConveyancePreference>(), Extensions = exts, PubKeyCredParams = _pubKeyCredParams });
 
             // 4. Temporarily store options, session/in-memory cache/redis/db
             HttpContext.Session.SetString("fido2.attestationOptions", options.ToJson());
