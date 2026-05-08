@@ -8,7 +8,7 @@
     <IsTrimmable>true</IsTrimmable>
     <NoWarn>$(NoWarn);IDE0057</NoWarn>
     <IsPackable>true</IsPackable>
-    <LangVersion>12</LangVersion>
+    <LangVersion>14</LangVersion>
     <PackageId>$(AssemblyName).Intercede</PackageId>
     <Authors>$(AssemblyName), Intercede</Authors>
     <PackageProjectUrl>https://github.com/authlogics/fido2-net-lib</PackageProjectUrl>
@@ -32,9 +32,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Fido2.Models\Fido2.Models.csproj" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.7" />
     <PackageReference Include="NSec.Cryptography" Version="25.4.0" />
-    <PackageReference Include="System.Formats.Cbor" Version="9.0.0" />
+    <PackageReference Include="System.Formats.Cbor" Version="10.0.7" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.2.0" />
   </ItemGroup>
 
