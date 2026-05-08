@@ -19,6 +19,8 @@
     <SupportedTargetFrameworks>net10.0</SupportedTargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Don't fail restore on NuGet audit findings; track & fix separately -->
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsNotAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- 
       Temporary disabling of CS1591 (Missing XML comment for publicly visible type or member) warning
