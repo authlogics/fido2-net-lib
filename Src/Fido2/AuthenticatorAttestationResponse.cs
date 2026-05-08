@@ -151,6 +151,10 @@ public sealed class AuthenticatorAttestationResponse : AuthenticatorResponse
         {
             TrustAnchor.Verify(metadataEntry, trustPath, metadataService?.ConformanceTesting() is true ? FidoValidationMode.FidoConformance2024 : FidoValidationMode.Default);
         }
+        catch (Fido2VerificationException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             throw new ApplicationException($"TrustAnchor.Verify failed for metadata entry guid: {metadataEntry?.AaGuid} and AttestationObject.Fmt: {AttestationObject.Fmt}. {ex}");

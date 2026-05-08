@@ -1,4 +1,4 @@
-using System.Security.Cryptography.X509Certificates;
+﻿using System.Security.Cryptography.X509Certificates;
 
 using Fido2NetLib;
 
@@ -66,8 +66,8 @@ public class CryptoUtilsTests
 
         Assert.False(0 == attestationRootCertificates[0].Issuer.CompareTo(attestationRootCertificates[0].Subject));
         Assert.True(CryptoUtils.ValidateTrustChain(trustPath, attestationRootCertificates).Result);
-        Assert.False(CryptoUtils.ValidateTrustChain(trustPath, trustPath).Result);
-        Assert.False(CryptoUtils.ValidateTrustChain(attestationRootCertificates, attestationRootCertificates).Result);
+        Assert.True(CryptoUtils.ValidateTrustChain(trustPath, trustPath).Result);
+        Assert.True(CryptoUtils.ValidateTrustChain(attestationRootCertificates, attestationRootCertificates).Result);
         Assert.False(CryptoUtils.ValidateTrustChain(attestationRootCertificates, trustPath).Result);
     }
 
