@@ -127,6 +127,9 @@ public sealed class CredentialPublicKey
 
             case COSE.KeyType.OKP:
                 return SignatureAlgorithm.Ed25519.Verify(_eddsa!, data, signature);
+
+            case COSE.KeyType.AKP:
+                return MLDsaCoseVerifier.Verify(_alg, _mldsaPublicKey!, data, signature);
         }
         throw new InvalidOperationException($"Missing or unknown kty {_type}");
     }

@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 
+using Fido2NetLib;
 using Fido2NetLib.Cbor;
 using Fido2NetLib.Objects;
 
@@ -151,3 +152,140 @@ public class MLDsaCoseTests
         return cpk;
     }
 }
+
+#pragma warning disable SYSLIB5006
+
+public class MLDsaVerifierTests
+{
+    // Mapping tests
+
+    [Theory]
+    [InlineData(COSE.Algorithm.ML_DSA_44)]
+    [InlineData(COSE.Algorithm.ML_DSA_65)]
+    [InlineData(COSE.Algorithm.ML_DSA_87)]
+    public void Map_ReturnsCorrectMLDsaAlgorithm(COSE.Algorithm alg)
+    {
+        var result = MLDsaCoseVerifier.Map(alg);
+        var expected = alg switch
+        {
+            COSE.Algorithm.ML_DSA_44 => MLDsaAlgorithm.MLDsa44,
+            COSE.Algorithm.ML_DSA_65 => MLDsaAlgorithm.MLDsa65,
+            COSE.Algorithm.ML_DSA_87 => MLDsaAlgorithm.MLDsa87,
+            _ => throw new Exception()
+        };
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void Map_ThrowsForES256()
+    {
+        Assert.Throws<NotSupportedException>(() => MLDsaCoseVerifier.Map(COSE.Algorithm.ES256));
+    }
+
+    // Crypto round-trip tests
+
+    [Theory]
+    [InlineData(COSE.Algorithm.ML_DSA_44)]
+    [InlineData(COSE.Algorithm.ML_DSA_65)]
+    [InlineData(COSE.Algorithm.ML_DSA_87)]
+    public void Verify_RoundTrip_ValidSignature(COSE.Algorithm alg)
+    {
+        if (!MLDsa.IsSupported)
+            return; // skip on platforms without ML-DSA support
+
+        var mldsaAlg = MLDsaCoseVerifier.Map(alg);
+        using var key = MLDsa.GenerateKey(mldsaAlg);
+
+        var pub = key.ExportMLDsaPublicKey();
+
+        var cpkMap = BuildAkpCborMap(alg, pub);
+        var cpk = new CredentialPublicKey(cpkMap);
+
+        byte[] data = RandomNumberGenerator.GetBytes(64);
+        byte[] sig = key.SignData(data);
+
+        Assert.True(cpk.Verify(data, sig));
+    }
+
+    [Theory]
+    [InlineData(COSE.Algorithm.ML_DSA_44)]
+    [InlineData(COSE.Algorithm.ML_DSA_65)]
+    [InlineData(COSE.Algorithm.ML_DSA_87)]
+    public void Verify_TamperedData_ReturnsFalse(COSE.Algorithm alg)
+    {
+        if (!MLDsa.IsSupported)
+            return;
+
+        var mldsaAlg = MLDsaCoseVerifier.Map(alg);
+        using var key = MLDsa.GenerateKey(mldsaAlg);
+
+        var pub = key.ExportMLDsaPublicKey();
+        var cpk = new CredentialPublicKey(BuildAkpCborMap(alg, pub));
+
+        byte[] data = RandomNumberGenerator.GetBytes(64);
+        byte[] sig = key.SignData(data);
+
+        // Flip a byte in data
+        data[0] ^= 0xFF;
+        Assert.False(cpk.Verify(data, sig));
+    }
+
+    [Theory]
+    [InlineData(COSE.Algorithm.ML_DSA_44)]
+    [InlineData(COSE.Algorithm.ML_DSA_65)]
+    [InlineData(COSE.Algorithm.ML_DSA_87)]
+    public void Verify_TamperedSignature_ReturnsFalse(COSE.Algorithm alg)
+    {
+        if (!MLDsa.IsSupported)
+            return;
+
+        var mldsaAlg = MLDsaCoseVerifier.Map(alg);
+        using var key = MLDsa.GenerateKey(mldsaAlg);
+
+        var pub = key.ExportMLDsaPublicKey();
+        var cpk = new CredentialPublicKey(BuildAkpCborMap(alg, pub));
+
+        byte[] data = RandomNumberGenerator.GetBytes(64);
+        byte[] sig = key.SignData(data);
+
+        // Flip a byte in signature
+        sig[0] ^= 0xFF;
+        Assert.False(cpk.Verify(data, sig));
+    }
+
+    [Theory]
+    [InlineData(COSE.Algorithm.ML_DSA_44)]
+    [InlineData(COSE.Algorithm.ML_DSA_65)]
+    [InlineData(COSE.Algorithm.ML_DSA_87)]
+    public void Verify_TruncatedSignature_ReturnsFalse(COSE.Algorithm alg)
+    {
+        if (!MLDsa.IsSupported)
+            return;
+
+        var mldsaAlg = MLDsaCoseVerifier.Map(alg);
+        using var key = MLDsa.GenerateKey(mldsaAlg);
+
+        var pub = key.ExportMLDsaPublicKey();
+        var cpk = new CredentialPublicKey(BuildAkpCborMap(alg, pub));
+
+        byte[] data = RandomNumberGenerator.GetBytes(64);
+        byte[] sig = key.SignData(data);
+
+        // Truncate signature by one byte
+        byte[] truncated = sig[..^1];
+        Assert.False(cpk.Verify(data, truncated));
+    }
+
+    private static CborMap BuildAkpCborMap(COSE.Algorithm alg, byte[] pub)
+    {
+        var cpk = new CborMap
+        {
+            { (long)COSE.KeyCommonParameter.KeyType, (long)COSE.KeyType.AKP },
+            { (long)COSE.KeyCommonParameter.Alg, (long)alg }
+        };
+        cpk.Add(-1L, pub);
+        return cpk;
+    }
+}
+
+#pragma warning restore SYSLIB5006
