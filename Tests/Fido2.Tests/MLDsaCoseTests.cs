@@ -1,8 +1,12 @@
 ﻿using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 
 using Fido2NetLib;
 using Fido2NetLib.Cbor;
 using Fido2NetLib.Objects;
+
+using Test;
 
 namespace fido2_net_lib.Test;
 
@@ -312,6 +316,97 @@ public class MLDsaVerifierTests
         };
         cpk.Add(-1L, pub);
         return cpk;
+    }
+}
+
+/// <summary>
+/// End-to-end assertion tests for ML-DSA: generates an ML-DSA key, builds
+/// attested credential data, synthesises an assertion, and validates it
+/// through the public Fido2.MakeAssertionAsync API.
+/// </summary>
+public class MLDsaEndToEndTests
+{
+    [Theory]
+    [InlineData(COSE.Algorithm.ML_DSA_44)]
+    [InlineData(COSE.Algorithm.ML_DSA_65)]
+    [InlineData(COSE.Algorithm.ML_DSA_87)]
+    public async Task AssertionRoundTrip_WithMLDsa_Succeeds(COSE.Algorithm alg)
+    {
+        if (!MLDsa.IsSupported)
+            return;
+
+        var mldsaAlg = MLDsaCoseVerifier.Map(alg);
+        using var key = MLDsa.GenerateKey(mldsaAlg);
+        var pub = key.ExportMLDsaPublicKey();
+
+        var cpkMap = new CborMap
+        {
+            { (long)COSE.KeyCommonParameter.KeyType, (long)COSE.KeyType.AKP },
+            { (long)COSE.KeyCommonParameter.Alg, (long)alg }
+        };
+        cpkMap.Add(-1L, pub);
+        var cpk = new CredentialPublicKey(cpkMap);
+
+        const string rp = "https://www.passwordless.dev";
+        var rpIdHash = SHA256.HashData(Encoding.UTF8.GetBytes(rp));
+        var flags = AuthenticatorFlags.AT | AuthenticatorFlags.ED | AuthenticatorFlags.UP | AuthenticatorFlags.UV;
+        var aaGuid = new Guid("F1D0F1D0-F1D0-F1D0-F1D0-F1D0F1D0F1D0");
+        var credentialId = new byte[] { 0xf1, 0xd0 };
+
+        var acd = new AttestedCredentialData(aaGuid, credentialId, cpk);
+        var extBytes = new CborMap { { "testing", true } }.Encode();
+        var exts = new Extensions(extBytes);
+        var ad = new AuthenticatorData(rpIdHash, flags, 1, acd, exts);
+        var authData = ad.ToByteArray();
+
+        var challenge = RandomNumberGenerator.GetBytes(128);
+        var clientDataJson = JsonSerializer.SerializeToUtf8Bytes(new MockClientData
+        {
+            Type = "webauthn.get",
+            Challenge = challenge,
+            Origin = rp
+        });
+
+        var hashedClientDataJson = SHA256.HashData(clientDataJson);
+        byte[] data = [.. authData, .. hashedClientDataJson];
+        byte[] signature = key.SignData(data);
+
+        var lib = new Fido2(new Fido2Configuration
+        {
+            ServerDomain = rp,
+            ServerName = rp,
+            Origins = new HashSet<string> { rp },
+        });
+
+        var existingCredentials = new List<PublicKeyCredentialDescriptor> { new(credentialId) };
+        var options = lib.GetAssertionOptions(existingCredentials, null, null);
+        options.Challenge = challenge;
+
+        var response = new AuthenticatorAssertionRawResponse
+        {
+            Response = new AuthenticatorAssertionRawResponse.AssertionResponse
+            {
+                AuthenticatorData = authData,
+                Signature = signature,
+                ClientDataJson = clientDataJson,
+                UserHandle = RandomNumberGenerator.GetBytes(16),
+            },
+            Type = PublicKeyCredentialType.PublicKey,
+            Id = "8dA",
+            RawId = credentialId,
+        };
+
+        var result = await lib.MakeAssertionAsync(new MakeAssertionParams
+        {
+            AssertionResponse = response,
+            OriginalOptions = options,
+            StoredPublicKey = cpk.GetBytes(),
+            IsUserHandleOwnerOfCredentialIdCallback = (args, ct) => Task.FromResult(true),
+            StoredSignatureCounter = 0
+        });
+
+        Assert.Equal(credentialId, result.CredentialId);
+        Assert.Equal("1", result.SignCount.ToString("X"));
     }
 }
 
