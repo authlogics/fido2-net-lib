@@ -185,6 +185,17 @@ public sealed class PubKeyCredParam(
     public static readonly PubKeyCredParam PS512 = new(COSE.Algorithm.PS512);
     public static readonly PubKeyCredParam Ed25519 = new(COSE.Algorithm.EdDSA);
     public static readonly PubKeyCredParam RS1 = new(COSE.Algorithm.RS1);
+    public static readonly PubKeyCredParam ML_DSA_44 = new(COSE.Algorithm.ML_DSA_44);
+    public static readonly PubKeyCredParam ML_DSA_65 = new(COSE.Algorithm.ML_DSA_65);
+    public static readonly PubKeyCredParam ML_DSA_87 = new(COSE.Algorithm.ML_DSA_87);
+
+    /// <summary>
+    /// Experimental: returns a list that prefers ML-DSA-65, with the
+    /// existing classical defaults retained as fallback. Browser /
+    /// authenticator support for ML-DSA is currently sparse.
+    /// </summary>
+    public static IReadOnlyList<PubKeyCredParam> WithExperimentalMLDsaFirst() =>
+        [ML_DSA_65, Ed25519, ES256, RS256, PS256, ES384, RS384, PS384, ES512, RS512, PS512];
 
     /// <summary>
     /// The default algorithms supported by the library

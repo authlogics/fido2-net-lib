@@ -153,6 +153,33 @@ public class MLDsaCoseTests
     }
 }
 
+public class PubKeyCredParamMLDsaTests
+{
+    [Fact]
+    public void Defaults_DoesNotContainMLDsa()
+    {
+        var defaults = PubKeyCredParam.Defaults;
+        Assert.DoesNotContain(defaults, p => p.Alg == COSE.Algorithm.ML_DSA_44);
+        Assert.DoesNotContain(defaults, p => p.Alg == COSE.Algorithm.ML_DSA_65);
+        Assert.DoesNotContain(defaults, p => p.Alg == COSE.Algorithm.ML_DSA_87);
+    }
+
+    [Fact]
+    public void WithExperimentalMLDsaFirst_FirstIsMLDsa65()
+    {
+        var list = PubKeyCredParam.WithExperimentalMLDsaFirst();
+        Assert.Equal(COSE.Algorithm.ML_DSA_65, list[0].Alg);
+    }
+
+    [Fact]
+    public void WithExperimentalMLDsaFirst_ContainsClassicalDefaults()
+    {
+        var list = PubKeyCredParam.WithExperimentalMLDsaFirst();
+        Assert.Contains(list, p => p.Alg == COSE.Algorithm.ES256);
+        Assert.Contains(list, p => p.Alg == COSE.Algorithm.RS256);
+    }
+}
+
 #pragma warning disable SYSLIB5006
 
 public class MLDsaVerifierTests
