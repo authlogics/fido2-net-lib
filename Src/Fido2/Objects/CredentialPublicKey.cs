@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
@@ -16,6 +17,7 @@ public sealed class CredentialPublicKey
     internal readonly ECDsa? _ecdsa;
     internal readonly RSA? _rsa;
     internal readonly NSec.Cryptography.PublicKey? _eddsa;
+    internal readonly byte[]? _mldsaPublicKey;
 
     public CredentialPublicKey(byte[] cpk)
         : this((CborMap)CborObject.Decode(cpk)) { }
@@ -40,6 +42,11 @@ public sealed class CredentialPublicKey
             case COSE.KeyType.OKP:
                 {
                     _eddsa = CreateEdDSA();
+                    return;
+                }
+            case COSE.KeyType.AKP:
+                {
+                    _mldsaPublicKey = ValidateAkp(cpk, _alg);
                     return;
                 }
         }
@@ -239,6 +246,39 @@ public sealed class CredentialPublicKey
             default:
                 throw new InvalidOperationException($"Missing or unknown alg {_alg}");
         }
+    }
+
+    private static byte[] ValidateAkp(CborMap cpk, COSE.Algorithm alg)
+    {
+        if (alg is not (COSE.Algorithm.ML_DSA_44 or COSE.Algorithm.ML_DSA_65 or COSE.Algorithm.ML_DSA_87))
+        {
+            throw new InvalidOperationException($"AKP key type requires ML-DSA algorithm. Was {alg}");
+        }
+
+        CborObject pubObj;
+        try
+        {
+            pubObj = cpk[COSE.KeyTypeParameter.Pub];
+        }
+        catch (KeyNotFoundException)
+        {
+            throw new InvalidOperationException("AKP key is missing the public key parameter (-1)");
+        }
+
+        if (pubObj is not CborByteString pubBytes)
+        {
+            throw new InvalidOperationException("AKP public key parameter (-1) is not a byte string");
+        }
+
+        var pub = pubBytes.Value;
+        int expectedSize = COSE.GetMLDsaPublicKeySize(alg);
+
+        if (pub.Length != expectedSize)
+        {
+            throw new InvalidOperationException($"AKP public key length {pub.Length} does not match expected {expectedSize} for {alg}");
+        }
+
+        return pub;
     }
 
     public static CredentialPublicKey Decode(ReadOnlyMemory<byte> cpk, out int bytesRead)

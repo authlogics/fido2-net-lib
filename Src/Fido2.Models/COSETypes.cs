@@ -58,6 +58,18 @@ public static class COSE
         /// ECDSA using secp256k1 curve and SHA-256
         /// </summary>
         ES256K = -47,
+        /// <summary>
+        /// ML-DSA-44 (FIPS 204, NIST level 2)
+        /// </summary>
+        ML_DSA_44 = -48,
+        /// <summary>
+        /// ML-DSA-65 (FIPS 204, NIST level 3)
+        /// </summary>
+        ML_DSA_65 = -49,
+        /// <summary>
+        /// ML-DSA-87 (FIPS 204, NIST level 5)
+        /// </summary>
+        ML_DSA_87 = -50,
         /// <summary> 
         /// ECDH ES w/ HKDF-256
         /// </summary>
@@ -103,6 +115,14 @@ public static class COSE
         /// </summary>
         Crv = -1,
         /// <summary>
+        /// Public key bytes (AKP)
+        /// </summary>
+        Pub = -1,
+        /// <summary>
+        /// Private key bytes (AKP)
+        /// </summary>
+        Priv = -2,
+        /// <summary>
         /// Key Value
         /// </summary>
         K = -1,
@@ -147,7 +167,11 @@ public static class COSE
         /// <summary>
         /// Symmetric Keys
         /// </summary>
-        Symmetric = 4
+        Symmetric = 4,
+        /// <summary>
+        /// Algorithmic Key Pair (used by ML-DSA)
+        /// </summary>
+        AKP = 7
     }
 
     /// <summary>
@@ -192,6 +216,22 @@ public static class COSE
         /// </summary>
         P256K = 8
     }
+
+    public static int GetMLDsaPublicKeySize(Algorithm alg) => alg switch
+    {
+        Algorithm.ML_DSA_44 => 1312,
+        Algorithm.ML_DSA_65 => 1952,
+        Algorithm.ML_DSA_87 => 2592,
+        _ => throw new ArgumentOutOfRangeException(nameof(alg))
+    };
+
+    public static int GetMLDsaSignatureSize(Algorithm alg) => alg switch
+    {
+        Algorithm.ML_DSA_44 => 2420,
+        Algorithm.ML_DSA_65 => 3309,
+        Algorithm.ML_DSA_87 => 4627,
+        _ => throw new ArgumentOutOfRangeException(nameof(alg))
+    };
 
     public static KeyType GetKeyTypeFromOid(string oid)
     {
