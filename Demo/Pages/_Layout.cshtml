@@ -41,34 +41,6 @@
 
 <body>
     <section class="hero is-black is-medium">
-        <div class="hero-head">
-            <nav class="navbar">
-                <div class="container">
-                    <div id="navbarMenuHeroB" class="navbar-menu">
-                        <div class="navbar-end">
-                            <a class="navbar-item" asp-page="/overview">
-                                Home
-                            </a>
-                            <a class="navbar-item" href="https://github.com/passwordless-lib/fido2-net-lib#examples">
-                                Documentation
-                            </a>
-                            <a class="navbar-item" href="https://opencollective.com/passwordless">
-                                Become a backer
-                            </a>
-                            <span class="navbar-item">
-                                <a class="button is-info is-inverted"
-                                    href="https://github.com/passwordless-lib/fido2-net-lib">
-                                    <span class="icon">
-                                        <i class="fab fa-github"></i>
-                                    </span>
-                                    <span>Download</span>
-                                </a>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-        </div>
 
         <div class="hero-body">
             <div class="container has-text-centered">
@@ -81,30 +53,7 @@
             </div>
         </div>
 
-        <div class="hero-foot" id="heroFoot">
-            <nav class="tabs is-boxed is-fullwidth">
-                <div class="container">
-                    <ul>
-                        <li class="@isActive("/overview")">
-                            <a asp-page="/overview" asp-fragment="heroFoot">Overview</a>
-                        </li>
-                        <li class="@isActive("/mfa")">
-                            <a asp-page="/mfa" asp-fragment="heroFoot">Use as 2FA/MFA</a>
-                        </li>
-                        <li class="@isActive("/passwordless")">
-                            <a asp-page="/passwordless" asp-fragment="heroFoot">Go Passwordless</a>
-                        </li>
-                        <li class="@isActive("/usernameless")">
-                            <a asp-page="/usernameless" asp-fragment="heroFoot">Go Usernameless too</a>
-                        </li>
-                        <li class="@isActive("/custom")">
-                            <a asp-page="/custom" asp-fragment="heroFoot">Custom</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-    </section>
+        </section>
     @RenderBody()
     <footer class="footer" style="        margin-top: 20vh">
         <div class="content has-text-centered">

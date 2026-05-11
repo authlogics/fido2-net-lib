@@ -67,7 +67,7 @@ app.UseSession();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.MapFallbackToPage("/", "/overview");
+app.MapFallbackToPage("/", "/custom");
 app.MapRazorPages();
 app.MapControllers();
 
