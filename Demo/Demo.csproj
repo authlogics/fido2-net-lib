@@ -5,6 +5,9 @@
     <RootNamespace>Fido2Demo</RootNamespace>
     <UserSecretsId>39589262-6aa1-4bde-aaa9-403a7542cf63</UserSecretsId>
     <NoWarn>$(NoWarn);NU1901</NoWarn>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\</DockerfileContext>
+    <DockerfileFile>Dockerfile</DockerfileFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,9 +19,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Dockerfile">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
     <Folder Include="wwwroot\bulma\" />
   </ItemGroup>
 
