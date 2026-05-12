@@ -293,6 +293,11 @@ public sealed class CredentialPublicKey
 
     public byte[] GetBytes() => _cpk.Encode();
 
+    /// <summary>
+    /// Gets the COSE algorithm identifier associated with this credential public key.
+    /// </summary>
+    public COSE.Algorithm Alg => _alg;
+
     public bool IsSameAlg(COSE.Algorithm alg) => _alg.Equals(alg);
 
     public CborMap GetCborObject() => _cpk;

@@ -1,4 +1,5 @@
 ﻿@page "/dashboard/{username}"
+@using Fido2NetLib.Objects
 @model Fido2Demo.Pages.dashboardModel
 @{
     ViewData["Title"] = "dashboard";
@@ -16,8 +17,28 @@
     // 2. Get registered credentials from database
     var existingCredentials = DemoStorage.GetCredentialsByUser(user);
 
-
-
+    // Short, human-readable descriptions of COSE algorithms.
+    // https://www.iana.org/assignments/cose/cose.xhtml#algorithms
+    static string AlgorithmDescription(Fido2NetLib.Objects.COSE.Algorithm alg) => alg switch
+    {
+        Fido2NetLib.Objects.COSE.Algorithm.RS1 => "RSASSA-PKCS1-v1_5 w/ SHA-1",
+        Fido2NetLib.Objects.COSE.Algorithm.RS256 => "RSASSA-PKCS1-v1_5 w/ SHA-256",
+        Fido2NetLib.Objects.COSE.Algorithm.RS384 => "RSASSA-PKCS1-v1_5 w/ SHA-384",
+        Fido2NetLib.Objects.COSE.Algorithm.RS512 => "RSASSA-PKCS1-v1_5 w/ SHA-512",
+        Fido2NetLib.Objects.COSE.Algorithm.PS256 => "RSASSA-PSS w/ SHA-256",
+        Fido2NetLib.Objects.COSE.Algorithm.PS384 => "RSASSA-PSS w/ SHA-384",
+        Fido2NetLib.Objects.COSE.Algorithm.PS512 => "RSASSA-PSS w/ SHA-512",
+        Fido2NetLib.Objects.COSE.Algorithm.ES256 => "ECDSA w/ SHA-256",
+        Fido2NetLib.Objects.COSE.Algorithm.ES384 => "ECDSA w/ SHA-384",
+        Fido2NetLib.Objects.COSE.Algorithm.ES512 => "ECDSA w/ SHA-512",
+        Fido2NetLib.Objects.COSE.Algorithm.ES256K => "ECDSA w/ secp256k1 and SHA-256",
+        Fido2NetLib.Objects.COSE.Algorithm.EdDSA => "EdDSA",
+        Fido2NetLib.Objects.COSE.Algorithm.ML_DSA_44 => "ML-DSA-44",
+        Fido2NetLib.Objects.COSE.Algorithm.ML_DSA_65 => "ML-DSA-65",
+        Fido2NetLib.Objects.COSE.Algorithm.ML_DSA_87 => "ML-DSA-87",
+        Fido2NetLib.Objects.COSE.Algorithm.ECDHES_HKDF256 => "ECDH-ES w/ HKDF-256",
+        _ => alg.ToString()
+    };
 }
 
 <div class="section">
@@ -36,6 +57,7 @@
                     <td>UserHandle</td>
                     <td>UserId</td>
                     <td>Attestation Type</td>
+                    <td>Algorithm</td>
                     <td>Public Key</td>
                 </tr>
             </thead>
@@ -46,6 +68,16 @@
                 var userHandle = System.Text.Encoding.UTF8.GetString(item.UserHandle);
                 var userId = System.Text.Encoding.UTF8.GetString(item.UserId);
                 var publicKey = System.Convert.ToBase64String(item.PublicKey);
+                string algorithmDisplay;
+                try
+                {
+                    var cpk = new CredentialPublicKey(item.PublicKey);
+                    algorithmDisplay = $"{(int)cpk.Alg} ({AlgorithmDescription(cpk.Alg)})";
+                }
+                catch
+                {
+                    algorithmDisplay = "unknown";
+                }
                 try
                 {
 
@@ -67,6 +99,7 @@
                     <td>@userHandle</td>
                     <td>@userId</td>
                     <td>@item.AttestationFormat</td>
+                    <td>@algorithmDisplay</td>
                     <td>
                         <details>
                             <summary>@publicKey.Substring(0, 10).Substring(0, 10)...</summary>
