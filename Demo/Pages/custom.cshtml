@@ -6,10 +6,11 @@
 
 <div class="section">
     <div class="container">
-        <h1 class="title is-1">MyID FIDO Demo Server</h1>
+        <h1 class="title is-1">MyID FIDO PQC Demo Server</h1>
         <div class="content">
             <p>In this scenario we have removed the need for passwords. We will use the settings set by you when registering your credentials. This is useful if you want to try differences or browser support etc.</p>
             <p>Note: When we say passwordless, what we mean is that no password is sent over the internet or stored in a database. Password, PINs or Biometrics might be used by the authenticator on the client</p>
+            <p>This demo supports authenticators using both classic RSA and ECC algorithms as well as PQC algorithms ML-DSA-44, ML-DSA-65 and ML-DSA-87. It runs within a Linux container that has PQC support via OpenSSL 3.5</p>
         </div>
         <div class="notification is-danger" style="display:none">
             Please note: Your browser does not seem to support WebAuthn yet. <a href="https://caniuse.com/#search=webauthn" target="_blank">Supported browsers</a>
