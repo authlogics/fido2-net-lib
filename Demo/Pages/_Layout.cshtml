@@ -31,8 +31,37 @@
         }
 
         .hero {
-            background-color: #4f46e5;
-            background-image: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%);
+            background-color: #1e293b;
+            background-image: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+
+        .footer {
+            background-color: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer .myid-logo {
+            max-width: 180px;
+            height: auto;
+            margin-bottom: 0.75rem;
+        }
+
+        .hero-body .hero-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-body .hero-logo {
+            max-width: 140px;
+            height: auto;
+            flex-shrink: 0;
+        }
+
+        .hero-body .hero-text {
+            text-align: left;
         }
     </style>
     <!--<link href="/stylesheets/styles.css" rel="stylesheet" type="text/css" />-->
@@ -43,35 +72,27 @@
     <section class="hero is-black is-medium">
 
         <div class="hero-body">
-            <div class="container has-text-centered">
-                <p class="title">
-                    Passkeys, FIDO2 & WebAuthn for .NET
-                </p>
-                <p class="subtitle">
-                    Enabling simple, secure authentication and mfa using FIDO2 / WebAuthn
-                </p>
+            <div class="container">
+                <div class="hero-content">
+                    <img class="hero-logo" src="~/images/MyID_Logo.svg" alt="MyID" />
+                    <div class="hero-text">
+                        <p class="title">
+                            Passkeys, FIDO2 & WebAuthn for .NET
+                        </p>
+                        <p class="subtitle">
+                            Enabling simple, secure authentication and mfa using FIDO2 / WebAuthn
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
 
         </section>
     @RenderBody()
-    <footer class="footer" style="        margin-top: 20vh">
+    <footer class="footer" style="margin-top: 20vh">
         <div class="content has-text-centered">
-            <p>
-                <strong>Fido2 .NET library</strong> by <a href="https://github.com/abergs">Anders Åberg</a>, <a
-                    href="https://github.com/aseigler">Alex Seigler</a> and <a
-                    href="https://github.com/passwordless-lib/fido2-net-lib/graphs/contributors">contributors</a>. The
-                source code is licensed
-                <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. Available on <a
-                    href="https://github.com/passwordless-lib/fido2-net-lib">Github</a>
-            </p>
-
-            <p><small>Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a></small></p>
-            <img src="~/images/dotnetfoundation_v4_horizontal.svg" alt=".NET foundation logo" width="220" />
-
-            <p><small>Illustrations from <a
-                        href="https://medium.com/@@herrjemand/introduction-to-webauthn-api-5fd1fb46c285">Ackermann
-                        Yuriy</a></small></p>
+            <p><strong>MyID</strong> &mdash; Passkeys, FIDO2 &amp; WebAuthn for .NET</p>
+            <p><small>&copy; @DateTime.UtcNow.Year Intercede. All rights reserved.</small></p>
         </div>
     </footer>
     <script src="~/js/instant.js"></script>
