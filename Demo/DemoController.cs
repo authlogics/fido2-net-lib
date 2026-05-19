@@ -5,31 +5,36 @@ using Fido2NetLib.Development;
 using Fido2NetLib.Objects;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Fido2Demo;
 
 [Route("api/[controller]")]
 public class DemoController : Controller
 {
-    private IFido2 _fido2;
+    private readonly IFido2 _fido2;
+    private readonly ILogger<DemoController> _logger;
     public static IMetadataService _mds;
     public static readonly DevelopmentInMemoryStore DemoStorage = new();
 
-    public DemoController(IFido2 fido2)
+    public DemoController(IFido2 fido2, ILogger<DemoController> logger)
     {
         _fido2 = fido2;
+        _logger = logger;
     }
 
     // Advertise all supported COSE algorithms to the client during registration,
     // with the new post-quantum ML-DSA algorithms (COSE -48, -49, -50) listed
     // ahead of classical RSA/ECC so authenticators that support them are
-    // preferred. See Documentation/MLDSA-Support.md.
+    // preferred. Within the ML-DSA family the strongest parameter set is listed
+    // first (ML-DSA-87, then -65, then -44) so an authenticator that supports
+    // more than one will pick the strongest. See Documentation/MLDSA-Support.md.
     private static readonly IReadOnlyList<PubKeyCredParam> _pubKeyCredParams =
     [
-        // Post-quantum (ML-DSA) — preferred
-        PubKeyCredParam.ML_DSA_44,
-        PubKeyCredParam.ML_DSA_65,
+        // Post-quantum (ML-DSA) — strongest first
         PubKeyCredParam.ML_DSA_87,
+        PubKeyCredParam.ML_DSA_65,
+        PubKeyCredParam.ML_DSA_44,
         // Classical fallbacks — limited to algorithms supported by real authenticators
         PubKeyCredParam.ES256,     // Required by CTAP2; supported by virtually all authenticators
         PubKeyCredParam.RS256,     // Windows Hello, platform authenticators
@@ -96,6 +101,7 @@ public class DemoController : Controller
         }
         catch (Exception e)
         {
+            _logger.LogError(e, "Error creating credential options for user {Username}", username);
             return Json(new { Status = "error", ErrorMessage = FormatException(e) });
         }
     }
@@ -150,6 +156,7 @@ public class DemoController : Controller
         }
         catch (Exception e)
         {
+            _logger.LogError(e, "Error making new credential");
             return Json(new { status = "error", errorMessage = FormatException(e) });
         }
     }
@@ -195,6 +202,7 @@ public class DemoController : Controller
 
         catch (Exception e)
         {
+            _logger.LogError(e, "Error creating assertion options for user {Username}", username);
             return Json(new { Status = "error", ErrorMessage = FormatException(e) });
         }
     }
@@ -240,6 +248,7 @@ public class DemoController : Controller
         }
         catch (Exception e)
         {
+            _logger.LogError(e, "Error making assertion");
             return Json(new { Status = "error", ErrorMessage = FormatException(e) });
         }
     }

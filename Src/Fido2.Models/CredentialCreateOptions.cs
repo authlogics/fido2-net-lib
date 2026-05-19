@@ -190,12 +190,15 @@ public sealed class PubKeyCredParam(
     public static readonly PubKeyCredParam ML_DSA_87 = new(COSE.Algorithm.ML_DSA_87);
 
     /// <summary>
-    /// Experimental: returns a list that prefers ML-DSA-65, with the
-    /// existing classical defaults retained as fallback. Browser /
-    /// authenticator support for ML-DSA is currently sparse.
+    /// Experimental: returns a list that prefers the ML-DSA algorithms, with the
+    /// existing classical defaults retained as fallback. Browser / authenticator
+    /// support for ML-DSA is currently sparse. The order of the ML-DSA entries
+    /// here is intentionally the COSE-identifier order (-48, -49, -50); callers
+    /// that care about preference between the ML-DSA parameter sets should
+    /// supply their own ordered list via <c>RequestNewCredentialParams.PubKeyCredParams</c>.
     /// </summary>
     public static IReadOnlyList<PubKeyCredParam> WithExperimentalMLDsaFirst() =>
-        [ML_DSA_65, Ed25519, ES256, RS256, PS256, ES384, RS384, PS384, ES512, RS512, PS512];
+        [ML_DSA_44, ML_DSA_65, ML_DSA_87, Ed25519, ES256, RS256, PS256, ES384, RS384, PS384, ES512, RS512, PS512];
 
     /// <summary>
     /// The default algorithms supported by the library
