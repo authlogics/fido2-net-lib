@@ -35,12 +35,7 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.7" />
     <PackageReference Include="NSec.Cryptography" Version="25.4.0" />
     <PackageReference Include="System.Formats.Cbor" Version="10.0.7" />
-    <PackageReference Include="Microsoft.Bcl.Memory" Version="9.0.14" />
-    <PackageReference Include="Microsoft.Build" Version="17.8.43" />
-    <PackageReference Include="NuGet.Packaging" Version="6.11.2" />
-    <PackageReference Include="NuGet.Protocol" Version="6.11.2" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.2.0" />
-    <PackageReference Include="System.Text.Json" Version="8.0.6" />
   </ItemGroup>
 
   <ItemGroup>
