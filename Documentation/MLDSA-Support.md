@@ -44,8 +44,11 @@ var options = fido2.RequestNewCredential(new RequestNewCredentialParams
 #pragma warning restore SYSLIB5006
 ```
 
-`WithExperimentalMLDsaFirst()` returns a list that prefers **ML-DSA-65**,
-followed by the classical defaults (EdDSA, ES256, RS256, PS256, etc.).
+`WithExperimentalMLDsaFirst()` returns a list that places the three ML-DSA
+parameter sets first in COSE-identifier order (**ML-DSA-44**, **ML-DSA-65**,
+**ML-DSA-87**), followed by the classical defaults (EdDSA, ES256, RS256,
+PS256, etc.). Callers that want a different preference between the ML-DSA
+parameter sets should supply their own ordered list.
 
 Individual constants are also available for custom lists:
 

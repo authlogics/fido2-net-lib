@@ -169,10 +169,13 @@ public class PubKeyCredParamMLDsaTests
     }
 
     [Fact]
-    public void WithExperimentalMLDsaFirst_FirstIsMLDsa65()
+    public void WithExperimentalMLDsaFirst_MLDsaEntriesComeFirstInCoseIdentifierOrder()
     {
         var list = PubKeyCredParam.WithExperimentalMLDsaFirst();
-        Assert.Equal(COSE.Algorithm.ML_DSA_65, list[0].Alg);
+        Assert.Equal(COSE.Algorithm.ML_DSA_44, list[0].Alg);
+        Assert.Equal(COSE.Algorithm.ML_DSA_65, list[1].Alg);
+        Assert.Equal(COSE.Algorithm.ML_DSA_87, list[2].Alg);
+        Assert.DoesNotContain(list.Skip(3), p => p.Alg is COSE.Algorithm.ML_DSA_44 or COSE.Algorithm.ML_DSA_65 or COSE.Algorithm.ML_DSA_87);
     }
 
     [Fact]
