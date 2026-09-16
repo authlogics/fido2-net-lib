@@ -59,6 +59,26 @@
                     </div>
                     <p class="help">For register the client will guide the user through setting up user verification if needed to create a discoverable credential. This takes precedence over the setting of userVerification.</p>
                 </div>
+                <div class="field">
+                    <label class="label">Algorithms (pubKeyCredParams)</label>
+                    <div class="control">
+                        <div class="select">
+                            <select id="option-algorithms">
+                                <option selected value="">Server default (ML-DSA-87, ML-DSA-65, ML-DSA-44, ES256, RS256, EdDSA)</option>
+                                <option value="-50,-49,-48">PQC only (ML-DSA-87, ML-DSA-65, ML-DSA-44)</option>
+                                <option value="-50">ML-DSA-87 only (-50)</option>
+                                <option value="-49">ML-DSA-65 only (-49)</option>
+                                <option value="-48">ML-DSA-44 only (-48)</option>
+                                <option value="-7,-257,-8">Classical only (ES256, RS256, EdDSA)</option>
+                                <option value="-7">ES256 only (-7)</option>
+                                <option value="-35">ES384 only (-35)</option>
+                                <option value="-257">RS256 only (-257)</option>
+                                <option value="-8">EdDSA / Ed25519 only (-8)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <p class="help">Register only. The RP advertises exactly these algorithms, in this order of preference, instead of its default list.</p>
+                </div>
             </form>
         </div>
     </div>

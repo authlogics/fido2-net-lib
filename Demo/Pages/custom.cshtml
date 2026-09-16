@@ -72,11 +72,10 @@
             </div>
         </div>
 
-        <partial name="_options.cshtml" />
         @await Html.PartialAsync("_options.cshtml")
 
     </div>
 </div>
 
-<script src="~/js/custom.register.js"></script>
-<script src="~/js/custom.login.js"></script>
+<script src="~/js/custom.register.js" asp-append-version="true"></script>
+<script src="~/js/custom.login.js" asp-append-version="true"></script>

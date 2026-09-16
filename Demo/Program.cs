@@ -37,7 +37,7 @@ builder.Services.AddFido2(options =>
     options.ServerDomain = builder.Configuration["fido2:serverDomain"];
     options.ServerName = "FIDO2 Test";
     options.Origins = builder.Configuration.GetSection("fido2:origins").Get<HashSet<string>>();
-    
+
     // Other options available:
     options.TimestampDriftTolerance = builder.Configuration.GetValue<int>("fido2:timestampDriftTolerance");
     options.MDSCacheDirPath = builder.Configuration["fido2:MDSCacheDirPath"];
@@ -50,6 +50,16 @@ builder.Services.AddFido2(options =>
     {
         //TODO: any specific config you want for accessing the MDS
     });
+
+    // Local metadata statements for authenticators that are not (yet) in the FIDO MDS, such as
+    // pre-release PQC keys whose attestation roots must still be trusted for full attestation.
+    // Each JSON file in the folder is one metadata statement (see Demo/Metadata).
+    var localMetadataDir = builder.Configuration["fido2:localMetadataDirPath"];
+    if (!string.IsNullOrEmpty(localMetadataDir))
+    {
+        var fullPath = Path.IsPathRooted(localMetadataDir) ? localMetadataDir : Path.Combine(builder.Environment.ContentRootPath, localMetadataDir);
+        config.AddFileSystemMetadataRepository(fullPath);
+    }
 });
 
 var app = builder.Build();

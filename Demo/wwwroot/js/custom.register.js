@@ -17,6 +17,9 @@ async function handleRegisterSubmit(event) {
     // possible values: true,false
     let residentKey = value("#option-residentkey");
 
+    // ordered, comma-separated COSE algorithm identifiers the RP should advertise (empty = server default)
+    let algorithms = value("#option-algorithms");
+
 
     // prepare form post data
     var data = new FormData();
@@ -26,6 +29,7 @@ async function handleRegisterSubmit(event) {
     data.append('authType', authenticator_attachment);
     data.append('userVerification', user_verification);
     data.append('residentKey', residentKey);
+    data.append('algs', algorithms);
 
     // send to server for registering
     let makeCredentialOptions;
@@ -59,6 +63,8 @@ async function handleRegisterSubmit(event) {
     });
 
     if (makeCredentialOptions.authenticatorSelection.authenticatorAttachment === null) makeCredentialOptions.authenticatorSelection.authenticatorAttachment = undefined;
+
+    console.log("PQC-DIAG create() options", JSON.stringify({ pubKeyCredParams: makeCredentialOptions.pubKeyCredParams, extensions: makeCredentialOptions.extensions, attestation: makeCredentialOptions.attestation }));
 
     console.log("Credential Options Formatted", makeCredentialOptions);
 
