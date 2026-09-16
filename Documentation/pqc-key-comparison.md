@@ -23,9 +23,9 @@ there. Once a credential exists, **authentication works through Windows too**, b
 assertion response is only about 4.8 KB.
 
 Nothing in `fido2-net-lib` is involved in the Windows failure: the request never reaches
-the relying party. The library verifies every ceremony that does arrive, with one gap: it
-cannot yet build an attestation public key from an ML-DSA certificate (see
-[Implications for fido2-net-lib](#implications-for-fido2-net-lib)).
+the relying party. The library verifies every ceremony that does arrive. One gap was found
+and fixed on this branch: it could not build an attestation public key from an ML-DSA
+certificate (see [Implications for fido2-net-lib](#implications-for-fido2-net-lib)).
 
 ## The keys
 
@@ -112,19 +112,30 @@ From `Microsoft-Windows-WebAuthN/Operational` for an alpha 8 ML-DSA registration
 - ML-DSA credentials (COSE `kty = 7` AKP, algs -48/-49/-50) are parsed and verified for
   both registration (self-attestation or attestation `none`) and assertion. All successful
   ceremonies above were verified by the library on Windows CNG ML-DSA.
-- **Gap:** `COSE.GetKeyTypeFromOid` (`Src/Fido2.Models/COSETypes.cs`) and the
-  `CredentialPublicKey(X509Certificate2, alg)` constructor (`Src/Fido2/Objects/CredentialPublicKey.cs`)
-  have no ML-DSA branch, so a packed attestation whose x5c leaf holds an ML-DSA key fails with
-  `Unknown oid. Was 2.16.840.1.101.3.4.3.19` (id-ml-dsa-87; -44 is `.17`, -65 is `.18`).
-  The fix is to map those OIDs to `KeyType.AKP`, export the raw key with
-  `X509Certificate2.GetMLDsaPublicKey()` (.NET 10), check the certificate's parameter set
-  against the attestation `alg`, and let the existing AKP `Verify` path handle the
-  signature. The rest of the packed checks (v3, subject C/O/OU/CN, AAGUID extension,
-  CA=false) already pass on alpha 8's certificate.
-- The alpha 8 attestation certificate is issued by "Yubico 2026-07 FIDO Preview CA". The
-  AAGUID is not in the FIDO Metadata Service, so `TrustAnchor.Verify` skips chain validation
-  and the attestation type is reported as AttCa without root verification. Validating a
-  chain of ML-DSA certificates would additionally depend on OS support in `X509Chain`.
+- **Gap (fixed on this branch):** `COSE.GetKeyTypeFromOid` (`Src/Fido2.Models/COSETypes.cs`)
+  and the `CredentialPublicKey(X509Certificate2, alg)` constructor
+  (`Src/Fido2/Objects/CredentialPublicKey.cs`) had no ML-DSA branch, so a packed attestation
+  whose x5c leaf holds an ML-DSA key failed with `Unknown oid. Was 2.16.840.1.101.3.4.3.19`
+  (id-ml-dsa-87; -44 is `.17`, -65 is `.18`). The fix maps those OIDs to `KeyType.AKP`,
+  exports the raw key with `X509Certificate2.GetMLDsaPublicKey()` (.NET 10), checks the
+  certificate's parameter set against the attestation `alg`, and lets the existing AKP
+  `Verify` path handle the signature. The rest of the packed checks (v3, subject C/O/OU/CN,
+  AAGUID extension, CA=false) already passed on alpha 8's certificate. Covered by
+  `Tests/Fido2.Tests/MLDsaAttestationTests.cs`, which includes the captured alpha 8 response
+  (`TestFiles/attestationYubicoPqcAlpha8MlDsa87.json`) as a real-device vector.
+- **Trust anchors:** the alpha 8 attestation certificate is issued by "Yubico 2026-07 FIDO
+  Preview CA", which publishes one self-signed root per parameter set (ML-DSA-44, -65, -87;
+  `Demo/Certificates/Yubico 2026-07 FIDO Preview CA Combined.pem`). The AAGUID is not in the
+  FIDO Metadata Service, so without local metadata `TrustAnchor.Verify` skips chain validation
+  and reports AttCa without root verification. The Demo now registers the library's
+  `FileSystemMetadataRepository` for the folder named by `fido2:localMetadataDirPath`
+  (default `Metadata`); `Demo/Metadata/yubico-2026-07-fido-preview-pqc-alpha8.json` is a
+  metadata statement for the alpha 8 AAGUID with `basic_full` attestation and the three
+  preview roots as trust anchors. With it, a Direct-attestation ML-DSA-87 registration from
+  alpha 8 (elevated Chrome) verifies end to end, and `X509Chain` on Windows 11 / .NET 10
+  builds the ML-DSA chain to the preview root. Note the PEM holds only ML-DSA roots: alpha 8's
+  classical (ES256) attestation certificate chains elsewhere, so Direct attestation for ES256
+  credentials from alpha 8 will fail chain validation until that root is added.
 
 ## Reproducing
 
