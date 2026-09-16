@@ -109,10 +109,39 @@ public sealed class CredentialPublicKey
                     _eddsa = CreateEdDSA();
                     break;
                 }
+            case COSE.KeyType.AKP:
+                {
+                    _mldsaPublicKey = ExportMLDsaPublicKey(cert, keyAlg, alg);
+                    _cpk.Add(COSE.KeyTypeParameter.Pub, _mldsaPublicKey);
+                    break;
+                }
             default:
                 throw new InvalidOperationException($"Missing or unknown kty {_type}");
         }
     }
+
+#pragma warning disable SYSLIB5006 // ML-DSA is experimental in .NET 10
+    /// <summary>
+    /// Extracts the raw FIPS 204 public key from an ML-DSA X.509 certificate (e.g. a packed
+    /// attestation certificate), checking that the certificate's parameter set matches the
+    /// COSE algorithm declared by the attestation statement.
+    /// </summary>
+    private static byte[] ExportMLDsaPublicKey(X509Certificate2 cert, string keyAlgOid, COSE.Algorithm alg)
+    {
+        var certAlg = COSE.GetMLDsaAlgorithmFromOid(keyAlgOid);
+
+        if (certAlg != alg)
+            throw new InvalidOperationException($"Certificate public key is {certAlg} but the declared algorithm is {alg}");
+
+        if (!MLDsa.IsSupported)
+            throw new PlatformNotSupportedException("ML-DSA is not supported by this platform's cryptographic provider.");
+
+        using var mldsa = cert.GetMLDsaPublicKey()
+            ?? throw new InvalidOperationException("Certificate does not contain an ML-DSA public key");
+
+        return mldsa.ExportMLDsaPublicKey();
+    }
+#pragma warning restore SYSLIB5006
 
     public bool Verify(ReadOnlySpan<byte> data, ReadOnlySpan<byte> signature)
     {

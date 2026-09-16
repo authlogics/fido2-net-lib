@@ -1,0 +1,23 @@
+{
+  "rp": { "id": "localhost", "name": "FIDO2 Test" },
+  "user": { "name": "alpha8-chrome-cp", "id": "YWxwaGE4LWNocm9tZS1jcA", "displayName": "alpha8-chrome-cp" },
+  "challenge": "5952crFn1yrOPYcpEqlOiw",
+  "pubKeyCredParams": [
+    { "type": "public-key", "alg": -50 },
+    { "type": "public-key", "alg": -49 },
+    { "type": "public-key", "alg": -48 },
+    { "type": "public-key", "alg": -7 },
+    { "type": "public-key", "alg": -257 },
+    { "type": "public-key", "alg": -8 }
+  ],
+  "timeout": 60000,
+  "attestation": "direct",
+  "authenticatorSelection": {
+    "authenticatorAttachment": "cross-platform",
+    "residentKey": "preferred",
+    "requireResidentKey": false,
+    "userVerification": "preferred"
+  },
+  "excludeCredentials": [],
+  "extensions": { "exts": true, "credProps": true }
+}

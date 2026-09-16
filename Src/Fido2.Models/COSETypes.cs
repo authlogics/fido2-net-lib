@@ -233,6 +233,21 @@ public static class COSE
         _ => throw new ArgumentOutOfRangeException(nameof(alg))
     };
 
+    /// <summary>
+    /// X.509 algorithm identifier for ML-DSA-44 (id-ml-dsa-44, FIPS 204 / RFC 9881).
+    /// </summary>
+    public const string OidMLDsa44 = "2.16.840.1.101.3.4.3.17";
+
+    /// <summary>
+    /// X.509 algorithm identifier for ML-DSA-65 (id-ml-dsa-65, FIPS 204 / RFC 9881).
+    /// </summary>
+    public const string OidMLDsa65 = "2.16.840.1.101.3.4.3.18";
+
+    /// <summary>
+    /// X.509 algorithm identifier for ML-DSA-87 (id-ml-dsa-87, FIPS 204 / RFC 9881).
+    /// </summary>
+    public const string OidMLDsa87 = "2.16.840.1.101.3.4.3.19";
+
     public static KeyType GetKeyTypeFromOid(string oid)
     {
         return oid switch
@@ -240,7 +255,23 @@ public static class COSE
             "1.2.840.10045.2.1" => KeyType.EC2, // ecPublicKey
             "1.2.840.113549.1.1.1" => KeyType.RSA,
             "1.3.101.112" => KeyType.OKP,
+            OidMLDsa44 or OidMLDsa65 or OidMLDsa87 => KeyType.AKP,
             _ => throw new Exception($"Unknown oid. Was {oid}")
+        };
+    }
+
+    /// <summary>
+    /// Maps an X.509 ML-DSA public key algorithm identifier to the corresponding COSE algorithm.
+    /// </summary>
+    /// <exception cref="ArgumentException">The OID is not an ML-DSA algorithm identifier.</exception>
+    public static Algorithm GetMLDsaAlgorithmFromOid(string oid)
+    {
+        return oid switch
+        {
+            OidMLDsa44 => Algorithm.ML_DSA_44,
+            OidMLDsa65 => Algorithm.ML_DSA_65,
+            OidMLDsa87 => Algorithm.ML_DSA_87,
+            _ => throw new ArgumentException($"Not an ML-DSA algorithm identifier. Was {oid}", nameof(oid))
         };
     }
 }
