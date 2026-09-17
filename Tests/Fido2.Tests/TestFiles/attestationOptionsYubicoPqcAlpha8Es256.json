@@ -1,0 +1,18 @@
+{
+  "rp": { "id": "localhost", "name": "FIDO2 Test" },
+  "user": { "name": "alpha8-direct", "id": "YWxwaGE4LWRpcmVjdA", "displayName": "alpha8-direct" },
+  "challenge": "2f7_ZFJ1RhnWmybFqgdyQQ",
+  "pubKeyCredParams": [
+    { "type": "public-key", "alg": -7 }
+  ],
+  "timeout": 60000,
+  "attestation": "direct",
+  "authenticatorSelection": {
+    "authenticatorAttachment": "cross-platform",
+    "residentKey": "preferred",
+    "requireResidentKey": false,
+    "userVerification": "preferred"
+  },
+  "excludeCredentials": [],
+  "extensions": { "exts": true, "credProps": true }
+}

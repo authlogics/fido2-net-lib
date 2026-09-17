@@ -147,17 +147,27 @@ public sealed class AuthenticatorAttestationResponse : AuthenticatorResponse
         if (metadataService?.ConformanceTesting() is true && metadataEntry is null && attType != AttestationType.None && AttestationObject.Fmt is not "fido-u2f")
             throw new Fido2VerificationException(Fido2ErrorCode.AaGuidNotFound, $"AAGUID not found in MDS test metadata ({authData.AttestedCredentialData.AaGuid})");
 
-        try
+        // A Relying Party may opt out of trust anchor validation for a specific authenticator model, separately
+        // for classical and post-quantum attestation certificates (never while conformance testing). Only
+        // reported when there was a chain to validate, i.e. a metadata statement with attestation types exists.
+        bool chainValidationSkipped = metadataService?.ConformanceTesting() is not true
+            && metadataEntry?.MetadataStatement?.AttestationTypes is not null
+            && IsChainValidationBypassed(config, authData.AttestedCredentialData.AaGuid, trustPath);
+
+        if (!chainValidationSkipped)
         {
-            TrustAnchor.Verify(metadataEntry, trustPath, metadataService?.ConformanceTesting() is true ? FidoValidationMode.FidoConformance2024 : FidoValidationMode.Default);
-        }
-        catch (Fido2VerificationException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            throw new ApplicationException($"TrustAnchor.Verify failed for metadata entry guid: {metadataEntry?.AaGuid} and AttestationObject.Fmt: {AttestationObject.Fmt}. {ex}");
+            try
+            {
+                TrustAnchor.Verify(metadataEntry, trustPath, metadataService?.ConformanceTesting() is true ? FidoValidationMode.FidoConformance2024 : FidoValidationMode.Default);
+            }
+            catch (Fido2VerificationException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"TrustAnchor.Verify failed for metadata entry guid: {metadataEntry?.AaGuid} and AttestationObject.Fmt: {AttestationObject.Fmt}. {ex}");
+            }
         }
 
         // 22. Assess the attestation trustworthiness using the outputs of the verification procedure in step 14, as follows:
@@ -206,8 +216,36 @@ public sealed class AuthenticatorAttestationResponse : AuthenticatorResponse
             AttestationClientDataJson = Raw.Response.ClientDataJson,
             User = originalOptions.User,
             AttestationFormat = AttestationObject.Fmt,
-            AaGuid = authData.AttestedCredentialData.AaGuid
+            AaGuid = authData.AttestedCredentialData.AaGuid,
+            AttestationChainValidationSkipped = chainValidationSkipped
         };
+    }
+
+    /// <summary>
+    /// Returns true when an <see cref="AttestationTrustPolicy"/> for the authenticator bypasses trust anchor
+    /// validation for the key family (classical or post-quantum) of the attestation certificate.
+    /// </summary>
+    private static bool IsChainValidationBypassed(Fido2Configuration config, Guid aaGuid, System.Security.Cryptography.X509Certificates.X509Certificate2[]? trustPath)
+    {
+        if (trustPath is not { Length: > 0 } || config.AttestationTrustPolicies is not { Count: > 0 })
+            return false;
+
+        var policy = config.AttestationTrustPolicies.FirstOrDefault(p => p.AaGuid == aaGuid);
+        if (policy is null)
+            return false;
+
+        bool isPostQuantum;
+        try
+        {
+            isPostQuantum = COSE.GetKeyTypeFromOid(trustPath[0].GetKeyAlgorithm()) == COSE.KeyType.AKP;
+        }
+        catch (Exception)
+        {
+            // Unknown key algorithm: treat as classical so that only an explicit classical bypass applies.
+            isPostQuantum = false;
+        }
+
+        return isPostQuantum ? policy.BypassPostQuantumChainValidation : policy.BypassClassicalChainValidation;
     }
 
     /// <summary>

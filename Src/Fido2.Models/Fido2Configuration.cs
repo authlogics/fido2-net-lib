@@ -100,6 +100,13 @@ public class Fido2Configuration
     ];
 
     /// <summary>
+    /// Per-authenticator (AAGUID) overrides that skip attestation certificate chain validation for
+    /// classical and/or post-quantum attestation certificates. Empty by default: every chain is validated.
+    /// See <see cref="AttestationTrustPolicy"/>.
+    /// </summary>
+    public IReadOnlyList<AttestationTrustPolicy> AttestationTrustPolicies { get; set; } = [];
+
+    /// <summary>
     /// Whether or not to accept a backup eligible credential
     /// </summary>
     public CredentialBackupPolicy BackupEligibleCredentialPolicy { get; set; } = CredentialBackupPolicy.Allowed;

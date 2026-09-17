@@ -1,0 +1,13 @@
+{
+  "_comment": "Real YubiKey PQC alpha 8 (AAGUID 2165deef-e5a8-4efa-9fe7-fea9ddb2d227) makeCredential response captured 2026-09-17 via elevated Chrome with pubKeyCredParams [-7] and attestation=direct. rp.id=localhost, origin=https://localhost:5001, challenge=2f7_ZFJ1RhnWmybFqgdyQQ. Credential: ES256. attStmt: packed, alg -7, sig 71 B, x5c[0] 563 B ECDSA P-256 cert 'CN=Yubico FIDO EE Serial 190523844, OU=Authenticator Attestation, O=Yubico AB, C=SE' issued by the ECDSA 'CN=Yubico 2026 FIDO Preview CA' (not published; valid until 2028-01-06). Chains to none of the ML-DSA 'Yubico 2026-07 FIDO Preview CA' roots.",
+  "id": "GsdQD-c1rHc_q5yNKb31IdrsOjA7EcEViXX3-nX_J24SGBgYY7w4rs8HC-6nkAfddw",
+  "rawId": "GsdQD-c1rHc_q5yNKb31IdrsOjA7EcEViXX3-nX_J24SGBgYY7w4rs8HC-6nkAfddw",
+  "type": "public-key",
+  "response": {
+    "attestationObject": "o2NmbXRmcGFja2VkZ2F0dFN0bXSjY2FsZyZjc2lnWEcwRQIhAJuydb1ByvUUK6H481EPFF_BkNu4dTMpk-BQH9hOk0O5AiBSRHxEbMQQYyEceRfdbF8Z3NzEvuOAZYIzbrm4VwL2jWN4NWOBWQIzMIICLzCCAbagAwIBAgIJAMQpWwuB-YmnMAoGCCqGSM49BAMDMCYxJDAiBgNVBAMMG1l1YmljbyAyMDI2IEZJRE8gUHJldmlldyBDQTAeFw0yNjA3MDkwOTQ4MjlaFw0yODAxMDYwOTQ4MjlaMG8xCzAJBgNVBAYTAlNFMRIwEAYDVQQKDAlZdWJpY28gQUIxIjAgBgNVBAsMGUF1dGhlbnRpY2F0b3IgQXR0ZXN0YXRpb24xKDAmBgNVBAMMH1l1YmljbyBGSURPIEVFIFNlcmlhbCAxOTA1MjM4NDQwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAQKb2IwIqwBP-6vFiXYTpMsM1A82yxdw_06hN4SCtmiTcG167hmnpmb654Xjm-41gFKOpPd3lSlzDopxEbn_KmPo4GDMIGAMBMGCisGAQQBgsQKDQEEBQQDBgAAMCMGCSsGAQQBgsQKAgQWMS4zLjYuMS40LjEuNDE0ODIuMS4xMDATBgsrBgEEAYLlHAIBAQQEAwIEMDAhBgsrBgEEAYLlHAEBBAQSBBAhZd7v5ahO-p_n_qndstInMAwGA1UdEwEB_wQCMAAwCgYIKoZIzj0EAwMDZwAwZAIwfjeK8X6qMhYuBcExcuE2uvOaSlTKQcXBzp6p5bUhNz6WUIrnqHWssGI0AnH5e1CQAjBUEVrMG3XYgzIOVlTsn1k9V9X8dc68XgFRL8Dte8Tg_YrM_Op_IrYw4Ef-QPHVvphoYXV0aERhdGFYtUmWDeWIDoxodDQXD2R2YFuP5K65ooYyx5lc87qDHZdjRQAAAAMhZd7v5ahO-p_n_qndstInADEax1AP5zWsdz-rnI0pvfUh2uw6MDsRwRWJdff6df8nbhIYGBhjvDiuzwcL7qeQB913pQECAyYgASFYIBrHUA_nNax3P6ucjSlTBnGMmQ014j3w3c3b7digAlwUIlggDIfOgPkEmjxS_EYBdFRcs4ZdRKu5pdocrEbkFk6rn7s",
+    "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiMmY3X1pGSjFSaG5XbXliRnFnZHlRUSIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0OjUwMDEiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+    "transports": ["nfc", "smart-card", "usb"]
+  },
+  "extensions": { "appid": false, "credProps": { "rk": true, "authenticatorDisplayName": null } },
+  "clientExtensionResults": { "appid": false, "credProps": { "rk": true, "authenticatorDisplayName": null } }
+}

@@ -52,6 +52,13 @@ public class RegisteredPublicKeyCredential
     public string AttestationFormat { get; init; }
 
     /// <summary>
+    /// True when the attestation certificate chain was not validated against a trust anchor because an
+    /// <see cref="AttestationTrustPolicy"/> for this authenticator bypassed it. The attestation signature
+    /// itself was still verified.
+    /// </summary>
+    public bool AttestationChainValidationSkipped { get; init; }
+
+    /// <summary>
     /// The value of the attestationObject attribute when the public key credential source was registered.
     /// Storing this enables the Relying Party to reference the credential's attestation statement at a later time.
     /// </summary>

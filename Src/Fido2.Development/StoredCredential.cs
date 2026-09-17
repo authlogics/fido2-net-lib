@@ -59,6 +59,11 @@ public class StoredCredential
 
     public string AttestationFormat { get; set; }
 
+    /// <summary>
+    /// True when the attestation certificate chain was not validated because an attestation trust policy bypassed it.
+    /// </summary>
+    public bool AttestationChainValidationSkipped { get; set; }
+
     public DateTimeOffset RegDate { get; set; }
 
     public Guid AaGuid { get; set; }
