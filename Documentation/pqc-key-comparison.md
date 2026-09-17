@@ -147,6 +147,38 @@ From `Microsoft-Windows-WebAuthN/Operational` for an alpha 8 ML-DSA registration
   AAGUID in `appsettings*.json` and the dashboard shows a "chain validation skipped" tag on such
   credentials. See `Documentation/MLDSA-Support.md`.
 
+## Swissbit iShield Key 2 FIDO2 PQC (test unit)
+
+Tested 2026-09-17. USB VID 1370 / PID 0911, AAGUID `817cdab8-0d51-4de1-a821-e25b88519cf3`,
+U2F attestation certificate "CN=iShield Key 2 FIPS Test, O=Swissbit AG" issued by
+"CN=Swissbit Test Root CA".
+
+- **Through Chrome's own CTAP stack (elevated Chrome): fails** with "Your device can't be used
+  with this site". Chrome logs `CBOR parse error from GetInfo response 'Integer values must be
+  between INT64_MIN and INT64_MAX'` and downgrades the key to U2F. The `getInfo` field 0x15
+  (`vendorPrototypeConfigCommands`) holds two vendor command IDs above `INT64_MAX`
+  (`0xB31E5238CAA45176`, `0x9B0EA7CD75180979`). They are legal CTAP unsigned integers, but
+  Chromium's CBOR reader only accepts the signed 64-bit range, so the whole `getInfo` is
+  discarded. The U2F fallback registration succeeds but cannot satisfy resident key, user
+  verification or ML-DSA, hence the message. Worth reporting to Swissbit (IDs below 2^63) and
+  Chromium.
+- **Through Windows webauthn.dll (normal Chrome): works.** Windows parses the `getInfo`. With
+  the Demo defaults (ML-DSA-87 first, attestation `none`) the key returned a 7383-byte
+  `makeCredential` response: `packed` with **ML-DSA-87 self-attestation** (4627-byte signature,
+  no x5c) over a 2727-byte authenticator data. That is under the 7609-byte CTAPHID limit, so
+  Windows accepted it, rewrote the attestation to `none`, and the library verified an
+  ML-DSA-87 credential (2592-byte key, 70-byte credential ID).
+- The `getInfo` advertises **no `algorithms` field** (CTAP default would be ES256 only), a
+  `maxMsgSize` of only 896 bytes, versions U2F_V2 / FIDO_2_0 / FIDO_2_1, and the usual PIN
+  options. Windows forwards the RP's algorithm list unfiltered and the key picks ML-DSA-87.
+- One registration with attestation `direct` (attachment unspecified) failed inside Windows:
+  after the touch the key returned a CTAPHID error frame with code `0x7F` (unspecified error),
+  Windows reported `0x80090320`, and the retry loop was cancelled. Single occurrence; not yet
+  reproduced.
+
+Contrast with the Yubico alpha 8: Swissbit's PQC self-attestation fits USB HID; Yubico's
+ML-DSA-87 attestation certificate alone (7618 bytes) exceeds it.
+
 ## Reproducing
 
 1. Run the Demo (`dotnet run --project Demo/Demo.csproj`) and open `https://localhost:5001`.

@@ -224,7 +224,7 @@ public class dashboardModel : PageModel
     private async Task<(string Description, string Icon)> DescribeAuthenticatorAsync(Guid aaGuid)
     {
         if (aaGuid == Guid.Empty)
-            return ("Not disclosed (attestation \"none\" zeroes the AAGUID)", null);
+            return ("Unknown (No AAGUID provided)", null);
 
         try
         {
