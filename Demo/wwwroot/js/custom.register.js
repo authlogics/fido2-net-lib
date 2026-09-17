@@ -20,6 +20,10 @@ async function handleRegisterSubmit(event) {
     // ordered, comma-separated COSE algorithm identifiers the RP should advertise (empty = server default)
     let algorithms = value("#option-algorithms");
 
+    // whether the RP should list the user's existing credentials in excludeCredentials (default: yes)
+    let excludeCredentialsOption = document.querySelector("#option-excludecredentials");
+    let excludeCredentials = excludeCredentialsOption ? excludeCredentialsOption.checked : true;
+
 
     // prepare form post data
     var data = new FormData();
@@ -30,6 +34,7 @@ async function handleRegisterSubmit(event) {
     data.append('userVerification', user_verification);
     data.append('residentKey', residentKey);
     data.append('algs', algorithms);
+    data.append('excludeCredentials', excludeCredentials ? 'true' : 'false');
 
     // send to server for registering
     let makeCredentialOptions;

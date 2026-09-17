@@ -79,6 +79,13 @@
                     </div>
                     <p class="help">Register only. The RP advertises exactly these algorithms, in this order of preference, instead of its default list.</p>
                 </div>
+                <div class="field">
+                    <label class="checkbox">
+                        <input type="checkbox" id="option-excludecredentials" checked>
+                        Exclude existing credentials
+                    </label>
+                    <p class="help">Register only. When on (the WebAuthn default) the RP lists the user's existing credentials in excludeCredentials, so an authenticator that already holds one refuses to create another. Turn off to register several credentials (for example PQC and classical) on the same key for comparison.</p>
+                </div>
             </form>
         </div>
     </div>

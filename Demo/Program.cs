@@ -43,6 +43,10 @@ builder.Services.AddFido2(options =>
     options.MDSCacheDirPath = builder.Configuration["fido2:MDSCacheDirPath"];
     options.BackupEligibleCredentialPolicy = builder.Configuration.GetValue<Fido2Configuration.CredentialBackupPolicy>("fido2:backupEligibleCredentialPolicy");
     options.BackedUpCredentialPolicy = builder.Configuration.GetValue<Fido2Configuration.CredentialBackupPolicy>("fido2:backedUpCredentialPolicy");
+
+    // Per-authenticator opt-outs of attestation certificate chain validation (classical and/or post-quantum),
+    // e.g. for preview devices whose attestation CA is not available yet. Empty = validate everything.
+    options.AttestationTrustPolicies = builder.Configuration.GetSection("fido2:attestationTrustPolicies").Get<List<AttestationTrustPolicy>>() ?? [];
 })
 .AddCachedMetadataService(config =>
 {

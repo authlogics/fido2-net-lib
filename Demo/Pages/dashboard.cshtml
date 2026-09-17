@@ -1,114 +1,109 @@
-﻿@page "/dashboard/{username}"
-@using Fido2NetLib.Objects
+@page "/dashboard/{username}"
 @model Fido2Demo.Pages.dashboardModel
 @{
     ViewData["Title"] = "dashboard";
     Layout = "_Layout.cshtml";
-
-    // Please know that this is not good for production:
-    var DemoStorage = DemoController.DemoStorage;
-    var _mds = DemoController._mds;
-
-    var username = Model.Username;
-
-    // 1. Get user from DB
-    var user = DemoStorage.GetUser(username);
-
-    // 2. Get registered credentials from database
-    var existingCredentials = DemoStorage.GetCredentialsByUser(user);
-
-    // Short, human-readable descriptions of COSE algorithms.
-    // https://www.iana.org/assignments/cose/cose.xhtml#algorithms
-    static string AlgorithmDescription(Fido2NetLib.Objects.COSE.Algorithm alg) => alg switch
-    {
-        Fido2NetLib.Objects.COSE.Algorithm.RS1 => "RSASSA-PKCS1-v1_5 w/ SHA-1",
-        Fido2NetLib.Objects.COSE.Algorithm.RS256 => "RSASSA-PKCS1-v1_5 w/ SHA-256",
-        Fido2NetLib.Objects.COSE.Algorithm.RS384 => "RSASSA-PKCS1-v1_5 w/ SHA-384",
-        Fido2NetLib.Objects.COSE.Algorithm.RS512 => "RSASSA-PKCS1-v1_5 w/ SHA-512",
-        Fido2NetLib.Objects.COSE.Algorithm.PS256 => "RSASSA-PSS w/ SHA-256",
-        Fido2NetLib.Objects.COSE.Algorithm.PS384 => "RSASSA-PSS w/ SHA-384",
-        Fido2NetLib.Objects.COSE.Algorithm.PS512 => "RSASSA-PSS w/ SHA-512",
-        Fido2NetLib.Objects.COSE.Algorithm.ES256 => "ECDSA w/ SHA-256",
-        Fido2NetLib.Objects.COSE.Algorithm.ES384 => "ECDSA w/ SHA-384",
-        Fido2NetLib.Objects.COSE.Algorithm.ES512 => "ECDSA w/ SHA-512",
-        Fido2NetLib.Objects.COSE.Algorithm.ES256K => "ECDSA w/ secp256k1 and SHA-256",
-        Fido2NetLib.Objects.COSE.Algorithm.EdDSA => "EdDSA",
-        Fido2NetLib.Objects.COSE.Algorithm.ML_DSA_44 => "ML-DSA-44",
-        Fido2NetLib.Objects.COSE.Algorithm.ML_DSA_65 => "ML-DSA-65",
-        Fido2NetLib.Objects.COSE.Algorithm.ML_DSA_87 => "ML-DSA-87",
-        Fido2NetLib.Objects.COSE.Algorithm.ECDHES_HKDF256 => "ECDH-ES w/ HKDF-256",
-        _ => alg.ToString()
-    };
 }
 
 <div class="section">
     <div class="container">
-        <h1 class="title is-1">Dashboard for: @username</h1>
+        <h1 class="title is-1">Dashboard for: @Model.Username</h1>
 
-        <p>This page shows all registered keys on this username. Please note that keys are only persisted in memory on the dev server.</p>
+        <p>Credentials registered for this username. They are only persisted in memory on the dev server.</p>
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <td>Date</td>
-                    <td>Desc</td>
-                    <td>Counter</td>
-                    <td>AAGuid</td>
-                    <td>UserHandle</td>
-                    <td>UserId</td>
-                    <td>Attestation Type</td>
-                    <td>Algorithm</td>
-                    <td>Public Key</td>
-                </tr>
-            </thead>
-            @foreach (var item in existingCredentials)
-            {
-                var desc = "";
-                var icon = "";
-                var userHandle = System.Text.Encoding.UTF8.GetString(item.UserHandle);
-                var userId = System.Text.Encoding.UTF8.GetString(item.UserId);
-                var publicKey = System.Convert.ToBase64String(item.PublicKey);
-                string algorithmDisplay;
-                try
-                {
-                    var cpk = new CredentialPublicKey(item.PublicKey);
-                    algorithmDisplay = $"{(int)cpk.Alg} ({AlgorithmDescription(cpk.Alg)})";
-                }
-                catch
-                {
-                    algorithmDisplay = "unknown";
-                }
-                try
-                {
+        @if (Model.Credentials.Count == 0)
+        {
+            <div class="notification is-light">No credentials registered for this user.</div>
+        }
+        else
+        {
+            <div class="tags are-medium">
+                <span class="tag is-success">@Model.PqcCount post-quantum (ML-DSA)</span>
+                <span class="tag is-light">@Model.ClassicalCount classical (ECDSA / RSA / EdDSA)</span>
+            </div>
 
-                    if (_mds != null)
+            <table class="table is-fullwidth is-striped is-hoverable">
+                <thead>
+                    <tr>
+                        <th>Registered</th>
+                        <th>Authenticator</th>
+                        <th>Algorithm</th>
+                        <th>Public key</th>
+                        <th>Signature</th>
+                        <th>Attestation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in Model.Credentials)
                     {
-                        var entry = await _mds.GetEntryAsync(item.AaGuid);
-                        desc = entry.MetadataStatement.Description.ToString();
-                        icon = entry.MetadataStatement.Icon.ToString();
+                        <tr>
+                            <td>
+                                @row.Registered.ToString("yyyy-MM-dd HH:mm") UTC
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(row.AuthenticatorIcon))
+                                {
+                                    <img src="@row.AuthenticatorIcon" alt="" style="height: 1.5rem; vertical-align: middle; margin-right: .25rem" />
+                                }
+                                @row.Authenticator
+                                @if (row.AaGuid != Guid.Empty)
+                                {
+                                    <br /><small><code class="has-text-grey-dark">@row.AaGuid</code></small>
+                                }
+                                @if (!string.IsNullOrEmpty(row.Transports))
+                                {
+                                    <br /><small class="has-text-grey">@row.Transports</small>
+                                }
+                            </td>
+                            <td>
+                                <strong>@row.AlgorithmName</strong> <small class="has-text-grey">(COSE @((int)row.Algorithm))</small>
+                                <br />
+                                @if (row.IsPqc)
+                                {
+                                    <span class="tag is-success">PQC</span>
+                                }
+                                else
+                                {
+                                    <span class="tag is-light">Classical</span>
+                                }
+                                <small class="has-text-grey">@row.KeyType</small>
+                            </td>
+                            <td>
+                                <strong>@row.PublicKeySizeBytes.ToString("N0") bytes</strong>
+                                <br /><small class="has-text-grey">@row.PublicKeySizeDetail</small>
+                                <details>
+                                    <summary><small>show key</small></summary>
+                                    <code class="has-text-grey-dark" style="display: block; word-break: break-all; font-size: .7rem; max-width: 28rem">@row.PublicKeyBase64</code>
+                                    <small class="has-text-grey">COSE key structure: @row.CoseKeySizeBytes.ToString("N0") bytes</small>
+                                </details>
+                            </td>
+                            <td>
+                                @row.SignatureSize
+                            </td>
+                            <td>
+                                <strong>@row.AttestationFormat</strong>
+                                @if (row.AttestationIsPqc)
+                                {
+                                    <span class="tag is-success">PQC attestation</span>
+                                }
+                                @if (row.AttestationChainValidationSkipped)
+                                {
+                                    <span class="tag is-warning" title="An attestation trust policy for this authenticator skipped certificate chain validation. The attestation signature was still verified.">chain validation skipped</span>
+                                }
+                                @if (!string.IsNullOrEmpty(row.AttestationSummary))
+                                {
+                                    <br /><small>@row.AttestationSummary</small>
+                                }
+                            </td>
+                        </tr>
                     }
+                </tbody>
+            </table>
 
-                }
-                catch { }
-
-                <tr>
-                    <td>@item.RegDate</td>
-                    <td><img src="@icon" /> @desc</td>
-                    <td>@item.SignCount</td>
-                    <td>@item.AaGuid</td>
-                    <td>@userHandle</td>
-                    <td>@userId</td>
-                    <td>@item.AttestationFormat</td>
-                    <td>@algorithmDisplay</td>
-                    <td>
-                        <details>
-                            <summary>@publicKey.Substring(0, 10).Substring(0, 10)...</summary>
-                            @publicKey
-                        </details>
-                    </td>
-                </tr>
-            }
-        </table>
-
+            <p class="help">
+                Public key and signature sizes are what make post-quantum credentials different in practice:
+                an ML-DSA-87 public key is 2,592 bytes and its signatures 4,627 bytes, against 64 bytes and about 70 bytes for ES256.
+            </p>
+        }
     </div>
 </div>

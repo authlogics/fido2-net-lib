@@ -134,8 +134,18 @@ From `Microsoft-Windows-WebAuthN/Operational` for an alpha 8 ML-DSA registration
   preview roots as trust anchors. With it, a Direct-attestation ML-DSA-87 registration from
   alpha 8 (elevated Chrome) verifies end to end, and `X509Chain` on Windows 11 / .NET 10
   builds the ML-DSA chain to the preview root. Note the PEM holds only ML-DSA roots: alpha 8's
-  classical (ES256) attestation certificate chains elsewhere, so Direct attestation for ES256
-  credentials from alpha 8 will fail chain validation until that root is added.
+  classical (ES256) attestation certificate ("Yubico FIDO EE Serial 190523844") is issued by the
+  ECDSA "CN=Yubico 2026 FIDO Preview CA", which is not in the PEM and not in Yubico's public
+  preview bundle (`developers.yubico.com/PKI/preview`, newest FIDO entry: the 2025 RSA preview
+  CA), so Direct attestation for ES256 credentials from alpha 8 fails chain validation
+  (`Invalid certificate chain (full)`).
+- **Attestation trust policies:** to keep the PQC chain validated while tolerating the missing
+  classical CA, `Fido2Configuration.AttestationTrustPolicies` (added on this branch) can bypass
+  chain validation per AAGUID, separately for classical and post-quantum attestation
+  certificates; the attestation signature is still verified and the result carries
+  `AttestationChainValidationSkipped`. The Demo enables the classical bypass for the alpha 8
+  AAGUID in `appsettings*.json` and the dashboard shows a "chain validation skipped" tag on such
+  credentials. See `Documentation/MLDSA-Support.md`.
 
 ## Reproducing
 

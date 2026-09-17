@@ -76,7 +76,8 @@ public class DemoController : Controller
                                             [FromForm] string authType,
                                             [FromForm] string residentKey,
                                             [FromForm] string userVerification,
-                                            [FromForm] string algs = null)
+                                            [FromForm] string algs = null,
+                                            [FromForm] bool excludeCredentials = true)
     {
         try
         {
@@ -94,8 +95,11 @@ public class DemoController : Controller
                 Id = Encoding.UTF8.GetBytes(username) // byte representation of userID is required
             });
 
-            // 2. Get user existing keys by username
-            var existingKeys = DemoStorage.GetCredentialsByUser(user).Select(c => c.Descriptor).ToList();
+            // 2. Get user existing keys by username (the demo UI can opt out of excluding them so that
+            //    several credentials, e.g. PQC and classical, can be registered on the same authenticator)
+            var existingKeys = excludeCredentials
+                ? DemoStorage.GetCredentialsByUser(user).Select(c => c.Descriptor).ToList()
+                : [];
 
             // 3. Create options
             var authenticatorSelection = new AuthenticatorSelection
@@ -166,9 +170,17 @@ public class DemoController : Controller
                 IsCredentialIdUniqueToUserCallback = callback
             }, cancellationToken: cancellationToken);
 
-            _logger.LogInformation("PQC-DIAG trust anchor: metadataAaguid='{Aaguid}' basicFull={BasicFull} privacyCa={PrivacyCa} roots={Roots} trustPathLength={TrustPath} status='{Status}'",
-                TrustAnchor.LastMetadataAaGuid, TrustAnchor.LastIsAttestationBasicFull, TrustAnchor.LastIsAttestationPrivacyCA,
-                TrustAnchor.LastAttestationRootCertificates?.Length ?? 0, TrustAnchor.LastTrustPath?.Length ?? 0, TrustAnchor.LastValidationStatus);
+            if (credential.AttestationChainValidationSkipped)
+            {
+                _logger.LogWarning("PQC-DIAG trust anchor: chain validation SKIPPED by attestation trust policy for aaguid {Aaguid} (fmt={Fmt})",
+                    credential.AaGuid, credential.AttestationFormat);
+            }
+            else
+            {
+                _logger.LogInformation("PQC-DIAG trust anchor: metadataAaguid='{Aaguid}' basicFull={BasicFull} privacyCa={PrivacyCa} roots={Roots} trustPathLength={TrustPath} status='{Status}'",
+                    TrustAnchor.LastMetadataAaGuid, TrustAnchor.LastIsAttestationBasicFull, TrustAnchor.LastIsAttestationPrivacyCA,
+                    TrustAnchor.LastAttestationRootCertificates?.Length ?? 0, TrustAnchor.LastTrustPath?.Length ?? 0, TrustAnchor.LastValidationStatus);
+            }
 
             // 3. Store the credentials in db
             DemoStorage.AddCredentialToUser(options.User, new StoredCredential
@@ -178,6 +190,7 @@ public class DemoController : Controller
                 UserHandle = credential.User.Id,
                 SignCount = credential.SignCount,
                 AttestationFormat = credential.AttestationFormat,
+                AttestationChainValidationSkipped = credential.AttestationChainValidationSkipped,
                 RegDate = DateTimeOffset.UtcNow,
                 AaGuid = credential.AaGuid,
                 Transports = credential.Transports,
